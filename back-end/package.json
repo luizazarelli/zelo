@@ -1,0 +1,20 @@
+{
+  "name": "zelo-back-end",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "dev": "tsx --env-file=.env --watch ./src/main.ts"
+  },
+  "devDependencies": {
+    "@types/node": "^25.5.0",
+    "tsx": "^4.21.0",
+    "typescript": "^5.9.3"
+  },
+  "dependencies": {
+    "fastify": "^5.8.2",
+    "glob": "^13.0.6",
+    "zod": "^4.3.6"
+  }
+}
