@@ -1,7 +1,7 @@
 import { ApplicationError } from '@common/errors/applicationError';
 import { DomainError } from '@common/errors/domainError';
 import { FastifyReply, FastifyRequest } from 'fastify';
-import { string } from 'zod';
+import z, { string, ZodError } from 'zod';
 
 export class ResponseProvider {
     static sendSuccessResponse(
@@ -27,7 +27,7 @@ export class ResponseProvider {
         reply: FastifyReply
     ) {
         let code = 500;
-        let message = 'Internal server error';
+        let message: string | object = 'Internal server error';
         if (error instanceof DomainError) {
             message = error.message;
         }
@@ -36,9 +36,13 @@ export class ResponseProvider {
             ((message = error.message), (code = error.code));
         }
 
+        if (error instanceof ZodError) {
+            message = z.treeifyError(error);
+        }
+
         reply.code(code).send({
             success: false,
-            message: message,
+            error: message,
             data: null,
         });
     }

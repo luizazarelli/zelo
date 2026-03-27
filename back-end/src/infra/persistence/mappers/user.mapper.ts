@@ -1,5 +1,5 @@
 import UserEntity from '@domain/entities/user.entity';
-import { InferSelectModel } from 'drizzle-orm';
+import { InferInsertModel, InferSelectModel } from 'drizzle-orm';
 import { users } from '../schema';
 
 export class UserMapper {
@@ -7,7 +7,7 @@ export class UserMapper {
         return UserEntity.restore(user);
     }
 
-    static toPersistence(user: UserEntity): InferSelectModel<typeof users> {
+    static toPersistence(user: UserEntity): InferInsertModel<typeof users> {
         return user.props;
     }
 }

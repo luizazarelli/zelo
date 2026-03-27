@@ -10,7 +10,7 @@ import { users } from '../schema';
 export default class UserRepositoryImpl implements IUserRepository {
     async create(user: UserEntity): Promise<void> {
         const values = UserMapper.toPersistence(user);
-        db.insert(users).values(values);
+        await db.insert(users).values(values);
     }
 
     async findById(id: string): Promise<UserEntity | null> {

@@ -7,10 +7,10 @@ import BaseController from '../base.controller';
 
 export default class SignUpController implements BaseController {
     register(http: FastifyInstance): void {
-        http.post('/api/v1/auth/register', async (request, response) => {
+        http.post('/api/v1/auth/sign-up', async (request, response) => {
             const payload = SignUpInputDTO.parse(request.body);
             const usecase = container.resolve(SignUpUseCase);
-            const result = usecase.execute(payload);
+            const result = await usecase.execute(payload);
 
             ResponseProvider.sendSuccessResponse(response, {
                 message: 'Cadastro realizado com sucesso',

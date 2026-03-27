@@ -9,10 +9,7 @@ interface IUserEntityProps {
     password: string;
 }
 
-type CreateUserProps = Omit<
-    IUserEntityProps,
-    'id' | 'createdAt' | 'updatedAt' | 'refreshTokens'
->;
+type CreateUserProps = Omit<IUserEntityProps, 'id' | 'createdAt' | 'updatedAt'>;
 
 export default class UserEntity {
     private static MAX_REFRESH_TOKENS = 3;
@@ -34,10 +31,6 @@ export default class UserEntity {
     }
 
     get props(): Readonly<IUserEntityProps> {
-        return this.props;
-    }
-
-    private createRefreshToken() {
-        return randomUUID();
+        return this._props;
     }
 }
