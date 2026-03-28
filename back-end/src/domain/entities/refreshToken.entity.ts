@@ -11,7 +11,7 @@ export interface IRefreshTokenProps {
 
 type createRefreshTokenProps = Omit<
     IRefreshTokenProps,
-    'id' | 'token' | 'createdAt'
+    'id' | 'token' | 'createdAt' | 'isRevoked'
 >;
 
 export class RefreshTokenEntity {
@@ -23,8 +23,17 @@ export class RefreshTokenEntity {
             id: randomUUID(),
             token: randomUUID(),
             createdAt: now,
+            isRevoked: false,
             ...props,
         });
+    }
+
+    static restore(props: IRefreshTokenProps) {
+        return new RefreshTokenEntity(props);
+    }
+
+    get props(): Readonly<IRefreshTokenProps> {
+        return this._props;
     }
 
     revoke() {

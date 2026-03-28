@@ -1,7 +1,7 @@
 import UserEntity from '@domain/entities/user.entity';
-import { HashProvider } from 'src/app/providers/hash.provider';
+import { IHashProvider } from '@domain/providers/hash.provider';
+import { INFRA } from '@infra/tokens';
 import { IUserRepository } from 'src/domain/repositories/user.repository';
-import { REPOSITORIES } from 'src/infra/persistence/repositories/tokens';
 import { inject, injectable } from 'tsyringe';
 import BaseUsecase from '../../base.usecase';
 import { UserAlreadyExists } from '../errors/userAlreadyExists.error';
@@ -14,8 +14,10 @@ export class SignUpUseCase implements BaseUsecase<
     SignUpOutputDTO
 > {
     constructor(
-        @inject(REPOSITORIES.USER)
-        private usersRepository: IUserRepository
+        @inject(INFRA.REPOSITORIES.USER)
+        private usersRepository: IUserRepository,
+        @inject(INFRA.PROVIDERS.HASH)
+        private hashProvider: IHashProvider
     ) {}
 
     async execute({
@@ -31,9 +33,7 @@ export class SignUpUseCase implements BaseUsecase<
             throw new UserAlreadyExists();
         }
 
-        const hasher = new HashProvider();
-        const hashedPassword = await hasher.hash(password);
-
+        const hashedPassword = await this.hashProvider.hash(password);
         const user = UserEntity.create({
             email: emailLowercased,
             password: hashedPassword,

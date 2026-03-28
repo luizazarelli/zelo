@@ -1,41 +1,50 @@
 import UserEntity from '@domain/entities/user.entity';
+import { IHashProvider } from '@domain/providers/hash.provider';
 import { IUserRepository } from '@domain/repositories/user.repository';
-import { beforeEach, expect, it, test, vi } from 'vitest';
+import { mockHashProvider } from 'src/test/mocks/providers/hash.provider';
+import { mockUserRepository } from 'src/test/mocks/repositories/user.repository.mock';
+import { afterAll, beforeEach, describe, expect, it, vi } from 'vitest';
 import { UserAlreadyExists } from '../errors/userAlreadyExists.error';
 import { SignUpInputDTO } from './sign-up.input.dto';
 import { SignUpUseCase } from './sign-up.usecase';
 
-const mockUserRepo = {
-    findByEmail: vi.fn(),
-} as unknown as IUserRepository;
-
-test('SignUpUsecase', () => {
+describe('SignUpUsecase', () => {
+    let userRepository: IUserRepository;
+    let hashProvider: IHashProvider;
     let useCase: SignUpUseCase;
 
     beforeEach(() => {
         vi.clearAllMocks();
-        useCase = new SignUpUseCase(mockUserRepo);
+
+        userRepository = mockUserRepository();
+        hashProvider = mockHashProvider();
+        useCase = new SignUpUseCase(userRepository, hashProvider);
     });
 
-    const input = {
+    afterAll(() => {
+        expect(userRepository.findByEmail).toHaveBeenCalledOnce();
+    });
+
+    const input: SignUpInputDTO = {
         email: 'a@example.com',
         name: 'abc',
         password: '123',
-    } satisfies SignUpInputDTO;
+    };
 
     it('should throw if an account with same email exists', async () => {
         const returnEntity = UserEntity.create({
-            email: 'a@example.com',
-            name: 'abc',
-            password: '123',
+            email: input.email,
+            name: input.name,
+            password: input.password,
         });
 
-        vi.mocked(mockUserRepo.findByEmail).mockResolvedValue(returnEntity);
+        vi.mocked(userRepository.findByEmail).mockResolvedValue(returnEntity);
         await expect(useCase.execute(input)).rejects.toThrow(UserAlreadyExists);
     });
 
     it('should create a new user successfully', async () => {
-        vi.mocked(mockUserRepo.findByEmail).mockResolvedValue(null);
+        vi.mocked(userRepository.findByEmail).mockResolvedValue(null);
         await expect(useCase.execute(input)).resolves.not.toThrow();
+        expect(userRepository.create).toHaveBeenCalledOnce();
     });
 });

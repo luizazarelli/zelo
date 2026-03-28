@@ -31,6 +31,6 @@ export default class UserRepositoryImpl implements IUserRepository {
 
     async update(user: UserEntity): Promise<void> {
         const values = UserMapper.toPersistence(user);
-        db.update(users).set(values).where(eq(users.id, user.props.id));
+        await db.update(users).set(values).where(eq(users.id, user.props.id));
     }
 }

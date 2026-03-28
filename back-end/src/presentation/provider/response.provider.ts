@@ -26,6 +26,8 @@ export class ResponseProvider {
         request: FastifyRequest,
         reply: FastifyReply
     ) {
+        console.error(error);
+
         let code = 500;
         let message: string | object = 'Internal server error';
         if (error instanceof DomainError) {

@@ -1,4 +1,7 @@
 export interface SignInOutputDTO {
-    email: string;
-    name: string;
+    jwt: string;
+    refreshToken: {
+        token: string;
+        expiresIn: Date;
+    };
 }

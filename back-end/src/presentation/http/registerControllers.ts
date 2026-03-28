@@ -1,3 +1,4 @@
+import fastifyCookie from '@fastify/cookie';
 import { type FastifyInstance, fastify } from 'fastify';
 import { Glob } from 'glob';
 import { ResponseProvider } from '../provider/response.provider';
@@ -11,6 +12,7 @@ export default class HttpRegisterControllers {
             logger: true,
         });
 
+        this.app.register(fastifyCookie);
         this.app.listen({ port }, (error, address) => {});
         this.app.setErrorHandler(ResponseProvider.sendErrorResponse);
         this.registerRoutes();
