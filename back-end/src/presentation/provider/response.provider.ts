@@ -1,7 +1,7 @@
 import { ApplicationError } from '@common/errors/applicationError';
 import { DomainError } from '@common/errors/domainError';
-import { FastifyReply, FastifyRequest } from 'fastify';
-import z, { string, ZodError } from 'zod';
+import { FastifyError, FastifyReply, FastifyRequest } from 'fastify';
+import z, { ZodError } from 'zod';
 
 export class ResponseProvider {
     static sendSuccessResponse(
@@ -15,7 +15,7 @@ export class ResponseProvider {
     ) {
         res.code(code || 200).send({
             success: true,
-            message: string,
+            message,
             data: data || null,
             meta,
         });
@@ -42,10 +42,22 @@ export class ResponseProvider {
             message = z.treeifyError(error);
         }
 
+        if (ResponseProvider.isFastifyError(error)) {
+            code = error.statusCode || 500;
+            message = error.message;
+        }
+
         reply.code(code).send({
             success: false,
             error: message,
             data: null,
         });
+    }
+
+    private static isFastifyError(error: unknown): error is FastifyError {
+        return (
+            typeof (error as any).code === 'string' &&
+            typeof (error as any).statusCode === 'number'
+        )
     }
 }
