@@ -22,9 +22,12 @@ export class CreateRefreshTokenUsecase implements BaseUsecase<
 
     async execute({
         userId,
+        skipUserValidation = false,
     }: CreateRefreshTokenInputDTO): Promise<RefreshTokenEntity | null> {
-        const userRegistered = await this.userRepository.findById(userId);
-        if (!userRegistered) throw new UserNotFound();
+        if (!skipUserValidation) {
+            const userRegistered = await this.userRepository.findById(userId);
+            if (!userRegistered) throw new UserNotFound();
+        }
 
         const refreshTokens = await this.refreshTokenRepository.getByUserId(
             userId,

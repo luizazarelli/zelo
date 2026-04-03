@@ -34,6 +34,16 @@ describe('CreateRefreshTokenUsecase', () => {
         expect(refreshTokenRepository.getByUserId).toHaveBeenCalledOnce();
     });
 
+    it('Should validate user if the skip is false', async () => {
+        await expect(usecase.execute({userId: '123', skipUserValidation: false})).resolves.not.toThrow(); 
+        expect(userRepository.findById).toHaveBeenCalledOnce();
+    });
+
+    it('Should not validate the user if the skip is true', async () => {
+        await expect(usecase.execute({userId: '123', skipUserValidation: true})).resolves.not.toThrow(); 
+        expect(userRepository.findById).not.toHaveBeenCalled();
+    })
+
     it('Should revoke all tokens if the max amount gets exceded', async () => {
         vi.mocked(refreshTokenRepository.getByUserId).mockResolvedValue(
             new Array(Config.env.MAX_SESSIONS).fill('token')
