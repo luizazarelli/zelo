@@ -15,6 +15,13 @@
       "when": 1774103486796,
       "tag": "0001_crazy_king_cobra",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1778169241382,
+      "tag": "0002_condemned_eternity",
+      "breakpoints": true
     }
   ]
 }

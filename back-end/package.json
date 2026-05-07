@@ -6,7 +6,7 @@
     "type": "module",
     "scripts": {
         "docker:dev": "docker compose up",
-        "dev": "yarn tsx --env-file=.env --watch ./src/main.ts",
+        "dev": "yarn tsx --watch ./src/main.ts",
         "test": "vitest"
     },
     "devDependencies": {
