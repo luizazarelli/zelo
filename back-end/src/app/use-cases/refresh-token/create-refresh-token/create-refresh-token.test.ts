@@ -1,7 +1,7 @@
 import { Config } from '@common/env.config';
-import UserEntity from '@domain/entities/user.entity';
 import { IRefreshTokenRepository } from '@domain/repositories/refreshToken.repository';
 import { IUserRepository } from '@domain/repositories/user.repository';
+import { mockUserEntity } from 'src/test/mocks/entities/user.entity.mock';
 import { mockRefreshTokenRepository } from 'src/test/mocks/repositories/refreshToken.repository.mock';
 import { mockUserRepository } from 'src/test/mocks/repositories/user.repository.mock';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
@@ -21,13 +21,7 @@ describe('CreateRefreshTokenUsecase', () => {
             refreshTokenRepository
         );
 
-        vi.mocked(userRepository.findById).mockResolvedValue(
-            UserEntity.create({
-                email: 'a@example.com',
-                name: 'test',
-                password: '123',
-            })
-        );
+        vi.mocked(userRepository.findById).mockResolvedValue(mockUserEntity());
     });
 
     afterEach(() => {

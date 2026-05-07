@@ -9,6 +9,7 @@ export const users = p.pgTable(
         updatedAt: p.timestamp('updated_at').defaultNow().notNull(),
         email: p.varchar().unique().notNull(),
         password: p.varchar().notNull(),
+        phone: p.varchar({length: 25}).notNull()
     },
     (table) => [
         p.index('user_name_idx').on(table.name),

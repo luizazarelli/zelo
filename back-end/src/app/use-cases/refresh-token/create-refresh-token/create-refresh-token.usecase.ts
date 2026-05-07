@@ -4,9 +4,9 @@ import { IRefreshTokenRepository } from '@domain/repositories/refreshToken.repos
 import { IUserRepository } from '@domain/repositories/user.repository';
 import { INFRA } from '@infra/tokens';
 import { inject, injectable } from 'tsyringe';
-import BaseUsecase from '../base.usecase';
-import { UserNotFound } from '../errors/userNotFound.error';
 import { CreateRefreshTokenInputDTO } from './create-refresh-token.input.dto';
+import BaseUsecase from '@application/use-cases/base.usecase';
+import { UserNotFound } from '@application/use-cases/errors/userNotFound.error';
 
 @injectable()
 export class CreateRefreshTokenUsecase implements BaseUsecase<

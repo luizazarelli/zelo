@@ -1,6 +1,6 @@
 import BaseUsecase from '@application/use-cases/base.usecase';
 import { InternalServerError } from '@application/use-cases/errors/internalServerError.error';
-import { CreateRefreshTokenUsecase } from '@application/use-cases/refresh-token/create-refresh-token.usecase';
+import { CreateRefreshTokenUsecase } from '@application/use-cases/refresh-token/create-refresh-token/create-refresh-token.usecase';
 import { Config } from '@common/env.config';
 import { IHashProvider } from '@domain/providers/hash.provider';
 import { IJwtProvider } from '@domain/providers/jwt.provider';

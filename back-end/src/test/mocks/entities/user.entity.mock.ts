@@ -5,5 +5,6 @@ export function mockUserEntity(): UserEntity {
         email: 'a@example',
         name: 'example',
         password: '123',
+        phone: '+554300000000'
     });
 }

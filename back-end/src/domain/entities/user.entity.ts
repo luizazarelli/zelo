@@ -7,12 +7,11 @@ interface IUserEntityProps {
     name: string;
     email: string;
     password: string;
+    phone: string;
 }
-
 type CreateUserProps = Omit<IUserEntityProps, 'id' | 'createdAt' | 'updatedAt'>;
 
 export default class UserEntity {
-    private static MAX_REFRESH_TOKENS = 3;
     private constructor(private _props: IUserEntityProps) {}
 
     static create(props: CreateUserProps): UserEntity {

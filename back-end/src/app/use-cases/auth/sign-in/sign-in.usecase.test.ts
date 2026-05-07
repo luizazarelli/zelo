@@ -1,8 +1,8 @@
-import UserEntity from '@domain/entities/user.entity';
 import { IHashProvider } from '@domain/providers/hash.provider';
 import { IJwtProvider } from '@domain/providers/jwt.provider';
 import { IUserRepository } from '@domain/repositories/user.repository';
 import IJwtPayload from 'src/@types/JwtPayload';
+import { mockUserEntity } from 'src/test/mocks/entities/user.entity.mock';
 import { mockHashProvider } from 'src/test/mocks/providers/hash.provider';
 import { mockJwtProvider } from 'src/test/mocks/providers/jwt.provider';
 import { mockUserRepository } from 'src/test/mocks/repositories/user.repository.mock';
@@ -51,13 +51,7 @@ describe('SignInUsecase', () => {
     });
 
     it('should throw if the password is wrong', async () => {
-        const returnEntity = UserEntity.create({
-            email: input.email,
-            name: '',
-            password: '321',
-        });
-
-        vi.mocked(userRepository.findByEmail).mockResolvedValue(returnEntity);
+        vi.mocked(userRepository.findByEmail).mockResolvedValue(mockUserEntity());
         vi.mocked(hashProvider.compare).mockResolvedValue(false);
 
         await expect(useCase.execute(input)).rejects.toThrow(
@@ -66,13 +60,7 @@ describe('SignInUsecase', () => {
     });
 
     it('should log in the user in succesfully', async () => {
-        const returnEntity = UserEntity.create({
-            email: input.email,
-            name: '',
-            password: 'hashed-123',
-        });
-
-        vi.mocked(userRepository.findByEmail).mockResolvedValue(returnEntity);
+        vi.mocked(userRepository.findByEmail).mockResolvedValue(mockUserEntity());
         vi.mocked(hashProvider.compare).mockResolvedValue(true);
         vi.mocked(createRefreshTokenUsecase.execute).mockResolvedValue({
             props: { token: 'refresh-token-123' },

@@ -24,6 +24,7 @@ export class SignUpUseCase implements BaseUsecase<
         email,
         name: username,
         password,
+        phone
     }: SignUpInputDTO): Promise<SignUpOutputDTO> {
         const emailLowercased = email.toLowerCase();
         const emailRegistered =
@@ -38,6 +39,7 @@ export class SignUpUseCase implements BaseUsecase<
             email: emailLowercased,
             password: hashedPassword,
             name: username.trim(),
+            phone: phone.trim()
         });
         await this.usersRepository.create(user);
 
