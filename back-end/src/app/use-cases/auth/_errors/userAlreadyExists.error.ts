@@ -1,4 +1,4 @@
-import { ApplicationError } from 'src/common/errors/applicationError';
+import { ApplicationError } from "@application/use-cases/_errors/applicationError";
 
 export class UserAlreadyExists extends ApplicationError {
     constructor() {

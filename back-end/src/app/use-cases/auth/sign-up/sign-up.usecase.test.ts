@@ -4,7 +4,7 @@ import { mockUserEntity } from 'src/test/mocks/entities/user.entity.mock';
 import { mockHashProvider } from 'src/test/mocks/providers/hash.provider';
 import { mockUserRepository } from 'src/test/mocks/repositories/user.repository.mock';
 import { afterAll, beforeEach, describe, expect, it, vi } from 'vitest';
-import { UserAlreadyExists } from '../errors/userAlreadyExists.error';
+import { UserAlreadyExists } from '../_errors/userAlreadyExists.error';
 import { SignUpInputDTO } from './sign-up.input.dto';
 import { SignUpUseCase } from './sign-up.usecase';
 

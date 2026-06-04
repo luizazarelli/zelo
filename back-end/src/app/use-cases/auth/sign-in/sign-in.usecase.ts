@@ -1,5 +1,5 @@
+import { InternalServerError } from '@application/use-cases/_errors/internalServerError.error';
 import BaseUsecase from '@application/use-cases/base.usecase';
-import { InternalServerError } from '@application/use-cases/errors/internalServerError.error';
 import { CreateRefreshTokenUsecase } from '@application/use-cases/refresh-token/create-refresh-token/create-refresh-token.usecase';
 import { Config } from '@common/env.config';
 import { IHashProvider } from '@domain/providers/hash.provider';
@@ -8,7 +8,7 @@ import { IUserRepository } from '@domain/repositories/user.repository';
 import { INFRA } from '@infra/tokens';
 import IJwtPayload from 'src/@types/JwtPayload';
 import { inject, injectable } from 'tsyringe';
-import { InvalidCredentials } from '../errors/invalidCredentials.error';
+import { InvalidCredentials } from '../_errors/invalidCredentials.error';
 import { SignInInputDTO } from './sign-in.input.dto';
 import { SignInOutputDTO } from './sign-in.output.dto';
 

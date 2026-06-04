@@ -1,5 +1,5 @@
-import { ApplicationError } from '@common/errors/applicationError';
-import { DomainError } from '@common/errors/domainError';
+import { ApplicationError } from '@application/use-cases/_errors/applicationError';
+import { DomainError } from '@domain/errors/domainError';
 import { FastifyError, FastifyReply, FastifyRequest } from 'fastify';
 import z, { ZodError } from 'zod';
 
@@ -21,6 +21,7 @@ export class ResponseProvider {
         });
     }
 
+    // TODO: add PINO for logging 
     static sendErrorResponse(
         error: unknown,
         request: FastifyRequest,

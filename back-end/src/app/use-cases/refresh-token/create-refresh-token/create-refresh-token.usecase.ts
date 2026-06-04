@@ -1,3 +1,4 @@
+import BaseUsecase from '@application/use-cases/base.usecase';
 import { Config } from '@common/env.config';
 import { RefreshTokenEntity } from '@domain/entities/refreshToken.entity';
 import { IRefreshTokenRepository } from '@domain/repositories/refreshToken.repository';
@@ -5,8 +6,7 @@ import { IUserRepository } from '@domain/repositories/user.repository';
 import { INFRA } from '@infra/tokens';
 import { inject, injectable } from 'tsyringe';
 import { CreateRefreshTokenInputDTO } from './create-refresh-token.input.dto';
-import BaseUsecase from '@application/use-cases/base.usecase';
-import { UserNotFound } from '@application/use-cases/errors/userNotFound.error';
+import { UserNotFound } from '@application/use-cases/_errors/userNotFound.error';
 
 @injectable()
 export class CreateRefreshTokenUsecase implements BaseUsecase<

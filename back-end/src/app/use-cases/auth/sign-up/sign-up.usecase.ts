@@ -4,7 +4,7 @@ import { INFRA } from '@infra/tokens';
 import { IUserRepository } from 'src/domain/repositories/user.repository';
 import { inject, injectable } from 'tsyringe';
 import BaseUsecase from '../../base.usecase';
-import { UserAlreadyExists } from '../errors/userAlreadyExists.error';
+import { UserAlreadyExists } from '../_errors/userAlreadyExists.error';
 import { SignUpInputDTO } from './sign-up.input.dto';
 import { SignUpOutputDTO } from './sign-up.output.dto';
 

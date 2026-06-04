@@ -1,4 +1,4 @@
-import { ApplicationError } from '@common/errors/applicationError';
+import { ApplicationError } from "./applicationError";
 
 export class UserNotFound extends ApplicationError {
     constructor() {
