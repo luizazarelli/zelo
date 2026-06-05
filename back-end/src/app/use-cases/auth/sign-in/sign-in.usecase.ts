@@ -37,11 +37,9 @@ export class SignInUsecase
 		);
 		if (!correctPassword) throw new InvalidCredentials();
 
-		const expiresInMs = 60 * 1000 * 15;
 		const jwt = this.jwtProvider.sign(
 			{ id: user.props.id, name: user.props.name },
 			Config.env.JWT_SECRET,
-			expiresInMs,
 		);
 
 		const refreshToken = await this.createRefreshTokenUsecase.execute({
@@ -53,7 +51,7 @@ export class SignInUsecase
 			jwt,
 			refreshToken: {
 				token: refreshToken?.props.token,
-				expiresIn: refreshToken.props.expiresAt,
+				expiresAt: refreshToken.props.expiresAt,
 			},
 		};
 	}
