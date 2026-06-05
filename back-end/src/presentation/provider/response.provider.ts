@@ -32,20 +32,16 @@ export class ResponseProvider {
 
 		let code = 500;
 		let message: string | object = "Internal server error";
-		if (error instanceof DomainError) {
-			message = error.message;
-		}
-
-		if (error instanceof ApplicationError) {
-			message = error.message;
-			code = error.code;
-		}
-
 		if (error instanceof ZodError) {
+			code = 400;
 			message = z.treeifyError(error);
-		}
-
-		if (ResponseProvider.isFastifyError(error)) {
+		} else if (error instanceof ApplicationError) {
+			code = error.code || 400;
+			message = error.message;
+		} else if (error instanceof DomainError) {
+			code = 422;
+			message = error.message;
+		} else if (ResponseProvider.isFastifyError(error)) {
 			code = error.statusCode || 500;
 			message = error.message;
 		}
