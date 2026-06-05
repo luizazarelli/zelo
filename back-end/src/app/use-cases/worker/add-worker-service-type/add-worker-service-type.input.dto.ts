@@ -1,8 +1,10 @@
 import z from "zod";
 
-export const addWorkerServiceTypeDto = z.object({
-    userId: z.uuid("Usuário inválido"),
-    serviceTypeId: z.uuid("Tipo de serviço inválido")
+export const addWorkerServiceTypeInputDto = z.object({
+	userId: z.uuid("Usuário inválido"),
+	serviceTypeId: z.uuid("Tipo de serviço inválido"),
 });
 
-export type AddWorkerServiceTypeDto = z.infer<typeof addWorkerServiceTypeDto>;
+export type AddWorkerServiceTypeInputDto = z.infer<
+	typeof addWorkerServiceTypeInputDto
+>;
