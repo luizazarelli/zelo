@@ -5,4 +5,5 @@ export interface IUserRepository {
     update(user: UserEntity): Promise<void>;
     findById(id: string): Promise<UserEntity | null>;
     findByEmail(email: string): Promise<UserEntity | null>;
+    searchByIds(ids: string[]): Promise<UserEntity[]>;
 }

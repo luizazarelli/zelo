@@ -1,5 +1,5 @@
 import UserEntity from '@domain/entities/user.entity';
-import { eq } from 'drizzle-orm';
+import { eq, inArray } from 'drizzle-orm';
 import { IUserRepository } from 'src/domain/repositories/user.repository';
 import { injectable } from 'tsyringe';
 import { db } from '../connection';
@@ -32,5 +32,11 @@ export default class UserRepositoryImpl implements IUserRepository {
     async update(user: UserEntity): Promise<void> {
         const values = UserMapper.toPersistence(user);
         await db.update(users).set(values).where(eq(users.id, user.props.id));
+    }
+
+    async searchByIds(ids: string[]): Promise<UserEntity[]> {
+        if (ids.length === 0) return [];
+        const rows = await db.select().from(users).where(inArray(users.id, ids));
+        return rows.map(UserMapper.toDomain);
     }
 }
