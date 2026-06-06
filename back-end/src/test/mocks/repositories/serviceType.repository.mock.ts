@@ -1,4 +1,4 @@
-import { IServiceTypeRepository } from "@domain/repositories/serviceType.repository";
+import type { IServiceTypeRepository } from "@domain/repositories/serviceType.repository";
 import { vi } from "vitest";
 import { mockServiceTypeEntity } from "../entities/serviceType.entity.mock";
 
@@ -7,6 +7,7 @@ export function mockServiceTypeRepository(): IServiceTypeRepository {
         create: vi.fn().mockResolvedValue(mockServiceTypeEntity()),
         deleteById: vi.fn(),
         findById: vi.fn().mockResolvedValue(mockServiceTypeEntity()),
-        save: vi.fn()
+        save: vi.fn(),
+        search: vi.fn().mockResolvedValue([mockServiceTypeEntity()]),
     }
 }

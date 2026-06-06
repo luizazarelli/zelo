@@ -1,5 +1,5 @@
-import { ServiceTypeEntity } from "@domain/entities/serviceType.entity";
-import { IServiceTypeRepository } from "@domain/repositories/serviceType.repository";
+import type { ServiceTypeEntity } from "@domain/entities/serviceType.entity";
+import type { IServiceTypeRepository } from "@domain/repositories/serviceType.repository";
 import { eq } from "drizzle-orm";
 import { injectable } from "tsyringe";
 import { db } from "../connection";
@@ -27,11 +27,16 @@ export class ServiceTypeRepositoryImpl implements IServiceTypeRepository {
 
     async save(entity: ServiceTypeEntity): Promise<void> {
         const {id, ...updatableData} = ServiceTypeMapper.toPersistence(entity);
-        
+
         await db.update(serviceType)
             .set({
                 ...updatableData
             })
             .where(eq(serviceType.id, id));
+    }
+
+    async search(): Promise<ServiceTypeEntity[]> {
+        const rows = await db.select().from(serviceType);
+        return rows.map(ServiceTypeMapper.toDomain);
     }
 }
