@@ -77,6 +77,34 @@ export const serviceType  = p.pgTable(
     }
 );
 
+export const hire = p.pgTable('hire', {
+    id: p.uuid().defaultRandom().primaryKey(),
+    clientId: p.uuid('client_id').references(() => users.id, { onDelete: 'cascade' }).notNull(),
+    workerId: p.uuid('worker_id').references(() => worker.userId, { onDelete: 'cascade' }).notNull(),
+    serviceTypeId: p.uuid('service_type_id').references(() => serviceType.id, { onDelete: 'cascade' }).notNull(),
+    description: p.text().notNull().default(''),
+    status: p.varchar({ length: 20 }).notNull().default('pending'),
+    createdAt: p.timestamp('created_at').defaultNow().notNull(),
+    updatedAt: p.timestamp('updated_at').defaultNow().notNull(),
+});
+
+export const message = p.pgTable('message', {
+    id: p.uuid().defaultRandom().primaryKey(),
+    hireId: p.uuid('hire_id').references(() => hire.id, { onDelete: 'cascade' }).notNull(),
+    senderId: p.uuid('sender_id').references(() => users.id, { onDelete: 'cascade' }).notNull(),
+    content: p.text().notNull(),
+    createdAt: p.timestamp('created_at').defaultNow().notNull(),
+});
+
+export const payment = p.pgTable('payment', {
+    id: p.uuid().defaultRandom().primaryKey(),
+    hireId: p.uuid('hire_id').references(() => hire.id, { onDelete: 'cascade' }).notNull().unique(),
+    amount: p.doublePrecision().notNull(),
+    status: p.varchar({ length: 20 }).notNull().default('pending'),
+    createdAt: p.timestamp('created_at').defaultNow().notNull(),
+    paidAt: p.timestamp('paid_at'),
+});
+
 export const relations = defineRelations({users, worker, workerServiceType, serviceType}, (r) => ({
     users: {
         worker: r.one.worker({
