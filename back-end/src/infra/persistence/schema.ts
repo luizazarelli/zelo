@@ -2,7 +2,7 @@ import { defineRelations } from 'drizzle-orm';
 import * as p from 'drizzle-orm/pg-core';
 
 export const users = p.pgTable(
-    'user',
+    'users',
     {
         id: p.uuid().defaultRandom().primaryKey(),
         name: p.varchar().notNull(),

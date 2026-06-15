@@ -16,11 +16,13 @@ services:
       retries: 5
 
   back-end:
-    build: 
+    build:
       context: ./back-end
       dockerfile: Dockerfile
     env_file:
       - .env
+    ports:
+      - 8000:8000
     volumes:
       - ./back-end:/app
       - /app/node_modules
