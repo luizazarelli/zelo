@@ -13,7 +13,7 @@ export default class HttpRegisterControllers {
         });
 
         this.app.register(fastifyCookie);
-        this.app.listen({ port }, (error, address) => {});
+        this.app.listen({ port, host: '0.0.0.0' }, (error, address) => {});
         this.app.setErrorHandler(ResponseProvider.sendErrorResponse);
         this.registerRoutes();
     }
