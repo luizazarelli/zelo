@@ -13,6 +13,18 @@ export default class HttpRegisterControllers {
         });
 
         this.app.register(fastifyCookie);
+
+        this.app.addHook('onRequest', (request, reply, done) => {
+            reply.header('Access-Control-Allow-Origin', '*');
+            reply.header('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE, OPTIONS');
+            reply.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+            if (request.method === 'OPTIONS') {
+                reply.status(200).send();
+                return;
+            }
+            done();
+        });
+
         this.app.listen({ port, host: '0.0.0.0' }, (error, address) => {});
         this.app.setErrorHandler(ResponseProvider.sendErrorResponse);
         this.registerRoutes();
