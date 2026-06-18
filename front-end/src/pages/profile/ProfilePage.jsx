@@ -6,7 +6,10 @@ function UserAvatar({ photo, onPick }) {
   const inputRef = useRef()
   const handleFile = (e) => {
     const file = e.target.files?.[0]
-    if (file) onPick(URL.createObjectURL(file))
+    if (!file) return
+    const reader = new FileReader()
+    reader.onload = (ev) => onPick(ev.target.result)
+    reader.readAsDataURL(file)
   }
   return (
     <div style={av.wrap} onClick={() => inputRef.current.click()}>
@@ -75,7 +78,7 @@ export default function ProfilePage() {
   const [phone, setPhone] = useState(user?.phone || '')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
-  const [photo, setPhoto] = useState(null)
+  const [photo, setPhoto] = useState(() => localStorage.getItem('zelo_profile_photo') || null)
 
   const handleSave = async (e) => {
     e.preventDefault()
@@ -94,7 +97,7 @@ export default function ProfilePage() {
     <div style={s.page}>
       {/* Cabeçalho com avatar */}
       <div style={s.top}>
-        <UserAvatar photo={photo} onPick={setPhoto} />
+        <UserAvatar photo={photo} onPick={(p) => { setPhoto(p); localStorage.setItem('zelo_profile_photo', p) }} />
         <p style={s.displayName}>{user?.name || 'Usuário'}</p>
         <p style={s.email}>{user?.email || 'email@exemplo.com'}</p>
       </div>
