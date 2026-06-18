@@ -16,7 +16,7 @@ const DEMO_SERVICE_TYPES = [
 
 const BANNER_SLIDES = [
   { src: '/imgs/banner.jpg',    title: 'CONTRATE COM\nCONFIANÇA' },
-  { src: '/imgs/pintura.jpg',   title: 'QUALIDADE A UM\nTOQUE' },
+  { src: '/imgs/pintura.jpg',   title: 'PROFISSIONAIS\nDE CONFIANÇA' },
   { src: '/imgs/construcao.jpg',title: 'SEU LAR EM\nBOAS MÃOS' },
 ]
 
