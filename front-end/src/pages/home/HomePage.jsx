@@ -14,7 +14,11 @@ const DEMO_SERVICE_TYPES = [
   { id: 'st6', name: 'Marcenaria' },
 ]
 
-const BANNER_SLIDES = ['/imgs/banner.jpg', '/imgs/pintura.jpg', '/imgs/construcao.jpg']
+const BANNER_SLIDES = [
+  { src: '/imgs/banner.jpg',    title: 'CONTRATE COM\nCONFIANÇA' },
+  { src: '/imgs/pintura.jpg',   title: 'QUALIDADE A UM\nTOQUE' },
+  { src: '/imgs/construcao.jpg',title: 'SEU LAR EM\nBOAS MÃOS' },
+]
 
 const SERVICE_PHOTOS = {
   eletrica:    '/imgs/worker.jpg',
@@ -105,21 +109,21 @@ export default function HomePage() {
             transform: `translateX(calc(-${bannerIdx * 100}% + ${dragX}px))`,
             transition: dragging ? 'none' : 'transform 0.4s ease',
           }}>
-            {BANNER_SLIDES.map((src, i) => (
+            {BANNER_SLIDES.map((slide, i) => (
               <div key={i} style={s.slide}>
-                <img src={src} style={s.slideImg} alt="" draggable={false} />
+                <img src={slide.src} style={s.slideImg} alt="" draggable={false} />
                 <div style={s.slideOverlay} />
                 <div style={s.slideLogoWrap}>
                   <p style={s.slideLogo}>ZELO</p>
                   <p style={s.slideTagline}>CUIDADO A UM TOQUE</p>
                 </div>
-                <p style={s.slideTitle}>CONTRATE COM{'\n'}CONFIANÇA</p>
+                <p style={s.slideTitle}>{slide.title}</p>
               </div>
             ))}
           </div>
         </div>
         <div style={s.dots}>
-          {BANNER_SLIDES.map((_, i) => (
+          {BANNER_SLIDES.map((_slide, i) => (
             <span
               key={i}
               style={{ ...s.dot, ...(i === bannerIdx ? s.dotActive : {}) }}
