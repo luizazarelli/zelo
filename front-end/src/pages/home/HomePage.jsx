@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { serviceTypeApi, workerApi } from '../../api/api'
+import { serviceTypeApi } from '../../api/api'
 import { useAuth } from '../../context/AuthContext'
 
 const norm = (s = '') => s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '')
@@ -12,15 +12,6 @@ const DEMO_SERVICE_TYPES = [
   { id: 'st4', name: 'Encanamento' },
   { id: 'st5', name: 'Jardinagem' },
   { id: 'st6', name: 'Marcenaria' },
-]
-
-const DEMO_WORKERS = [
-  { id: 'w1', name: 'Lucas Martins',  serviceTypes: ['Elétrica'],   serviceTypeIds: ['st1'], workingSince: '2019-01-01' },
-  { id: 'w3', name: 'Thiago Costa',   serviceTypes: ['Pintura'],    serviceTypeIds: ['st2'], workingSince: '2018-03-20' },
-  { id: 'w5', name: 'Diego Pereira',  serviceTypes: ['Construção'], serviceTypeIds: ['st3'], workingSince: '2016-07-10' },
-  { id: 'w7', name: 'Fábio Carvalho', serviceTypes: ['Encanamento'],serviceTypeIds: ['st4'], workingSince: '2020-02-14' },
-  { id: 'w8', name: 'Roberto Souza',  serviceTypes: ['Jardinagem'], serviceTypeIds: ['st5'], workingSince: '2019-08-30' },
-  { id: 'w9', name: 'André Mendes',   serviceTypes: ['Marcenaria'], serviceTypeIds: ['st6'], workingSince: '2018-12-01' },
 ]
 
 const BANNER_SLIDES = ['/imgs/banner.jpg', '/imgs/pintura.jpg', '/imgs/construcao.jpg']
@@ -37,23 +28,11 @@ const SERVICE_PHOTOS = {
 
 const getServicePhoto = (name = '') => SERVICE_PHOTOS[norm(name)] || '/imgs/worker.jpg'
 
-function StarIcons({ count = 4 }) {
-  return (
-    <div style={{ display: 'flex', gap: 2, marginTop: 2 }}>
-      {[1, 2, 3, 4, 5].map(i => (
-        <svg key={i} width="7" height="7" viewBox="0 0 24 24" fill={i <= count ? '#38b31f' : '#ccc'}>
-          <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
-        </svg>
-      ))}
-    </div>
-  )
-}
 
 export default function HomePage() {
   const { user } = useAuth()
   const navigate = useNavigate()
   const [serviceTypes, setServiceTypes] = useState([])
-  const [workers, setWorkers] = useState([])
   const [bannerIdx, setBannerIdx] = useState(0)
 
   const drag = useRef({ active: false, startX: 0, deltaX: 0 })
@@ -75,14 +54,6 @@ export default function HomePage() {
       })
       .catch(() => setServiceTypes(DEMO_SERVICE_TYPES))
 
-    workerApi.search()
-      .then(r => {
-        const ws = r.data.data?.workers || []
-        const apiNames = new Set(ws.map(w => norm(w.name)))
-        const extras = DEMO_WORKERS.filter(d => !apiNames.has(norm(d.name)))
-        setWorkers([...ws, ...extras])
-      })
-      .catch(() => setWorkers(DEMO_WORKERS))
   }, [])
 
   useEffect(() => {
@@ -109,17 +80,6 @@ export default function HomePage() {
     else if (drag.current.deltaX > 60) setBannerIdx(i => Math.max(i - 1, 0))
     setDragX(0)
   }
-
-  const workersByType = serviceTypes.map(st => ({
-    ...st,
-    workers: workers.filter(w =>
-      w.serviceTypes?.some(t => norm(t) === norm(st.name))
-    ),
-  })).filter(st => st.workers.length > 0)
-
-  const sections = workersByType.length > 0 ? workersByType
-    : workers.length > 0 ? [{ id: 'all', name: 'disponíveis', workers }]
-    : []
 
   return (
     <div style={s.page}>
@@ -186,36 +146,6 @@ export default function HomePage() {
         ))}
       </div>
 
-      {/* Seções de profissionais */}
-      {sections.map(st => (
-        <div key={st.id} style={s.section}>
-          <p style={s.sTitle}>Profissionais em {st.name}</p>
-          <p style={s.sSub}>Encontre o profissional perfeito</p>
-          <div style={s.workerRow}>
-            {st.workers.slice(0, 1).map(w => {
-              const years = w.workingSince
-                ? `${new Date().getFullYear() - new Date(w.workingSince).getFullYear()} anos de experiência`
-                : '5 anos de experiência'
-              return (
-                <div
-                  key={w.id}
-                  style={s.workerCard}
-                  onClick={() => navigate(`/workers/${w.id}`, { state: { worker: w } })}
-                >
-                  <img src={getServicePhoto(w.serviceTypes?.[0])} style={s.workerImg} alt="" />
-                  <div style={s.workerGradient} />
-                  <div style={s.workerInfo}>
-                    <p style={s.workerName}>{w.name}</p>
-                    <p style={s.workerYears}>{years}</p>
-                    <StarIcons count={4} />
-                  </div>
-                </div>
-              )
-            })}
-          </div>
-        </div>
-      ))}
-
       <div style={{ height: 80 }} />
     </div>
   )
@@ -260,21 +190,4 @@ const s = {
   },
   serviceLabel: { position: 'relative', zIndex: 1, color: '#fff', fontSize: 17, fontWeight: '900', padding: '0 20px 16px', margin: 0 },
 
-  workerRow: { display: 'flex', gap: 10, overflowX: 'auto', paddingBottom: 4 },
-  workerCard: {
-    minWidth: 161, maxWidth: 161, height: 161,
-    cursor: 'pointer', flexShrink: 0,
-    borderRadius: 10, overflow: 'hidden', position: 'relative',
-  },
-  workerImg: {
-    position: 'absolute', inset: 0, width: '100%', height: '100%',
-    objectFit: 'cover', objectPosition: 'center 15%',
-  },
-  workerGradient: {
-    position: 'absolute', bottom: 0, left: 0, right: 0, height: '55%',
-    background: 'linear-gradient(to top, rgba(56,179,31,0.92) 0%, transparent 100%)',
-  },
-  workerInfo: { position: 'absolute', bottom: 0, left: 0, right: 0, zIndex: 1, padding: '0 0 10px 10px' },
-  workerName: { fontWeight: 'bold', fontSize: 14, color: '#fff', margin: 0 },
-  workerYears: { fontSize: 9, color: 'rgba(255,255,255,0.88)', marginTop: 1, marginBottom: 0 },
 }
