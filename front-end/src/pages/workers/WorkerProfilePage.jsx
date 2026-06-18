@@ -139,21 +139,16 @@ export default function WorkerProfilePage() {
 
         <p style={s.secTitle}>Avaliações</p>
 
-        {[1, 2].map(i => (
+        {[
+          { stars: 5, text: 'Serviço excelente, pontual e muito cuidadoso. Super recomendo!', author: 'Mariana Costa' },
+          { stars: 4, text: 'Ótimo profissional, resolveu o problema rapidinho. Só chegou um pouquinho atrasado, mas o trabalho ficou perfeito.', author: 'Ricardo Souza' },
+        ].map((r, i) => (
           <div key={i} style={s.review}>
-            <div style={s.reviewPhotos}>
-              {[1, 2, 3].map(j => (
-                <div key={j} style={s.reviewPhoto}>
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="rgba(60,60,60,0.4)">
-                    <path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z" />
-                  </svg>
-                </div>
-              ))}
+            <div style={s.reviewHeader}>
+              <p style={s.reviewAuthor}>{r.author}</p>
+              <StarIcons count={r.stars} size={13} />
             </div>
-            <p style={s.reviewText}>
-              Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo.
-            </p>
-            <p style={s.reviewAuthor}>Cliente da Silva</p>
+            <p style={s.reviewText}>{r.text}</p>
           </div>
         ))}
 
@@ -197,17 +192,13 @@ const s = {
   },
   secTitle: { fontSize: 16, fontWeight: '500', color: '#38b31f', marginBottom: 10, marginTop: 0 },
   review: {
-    border: '1px solid rgba(60,60,60,0.5)', borderRadius: 5,
-    padding: 10, marginBottom: 10, display: 'flex', flexDirection: 'column', gap: 10,
+    border: '1px solid rgba(60,60,60,0.15)', borderRadius: 8,
+    padding: 12, marginBottom: 10, display: 'flex', flexDirection: 'column', gap: 6,
+    background: '#fff', boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
   },
-  reviewPhotos: { display: 'flex', gap: 10 },
-  reviewPhoto: {
-    width: 64, height: 64, borderRadius: 5,
-    background: 'rgba(60,60,60,0.15)', flexShrink: 0,
-    display: 'flex', alignItems: 'center', justifyContent: 'center',
-  },
-  reviewText: { fontSize: 12, color: '#000', lineHeight: 1.5, margin: 0 },
-  reviewAuthor: { fontSize: 12, color: 'rgba(60,60,60,0.5)', textAlign: 'right', margin: 0 },
+  reviewHeader: { display: 'flex', justifyContent: 'space-between', alignItems: 'center' },
+  reviewAuthor: { fontSize: 13, fontWeight: '600', color: '#252525', margin: 0 },
+  reviewText: { fontSize: 12, color: '#3c3c3c', lineHeight: 1.5, margin: 0 },
   portfolioImg: { width: '100%', borderRadius: 10, marginBottom: 14, aspectRatio: '3/2', overflow: 'hidden' },
   portfolioImgEl: { width: '100%', height: '100%', objectFit: 'cover', display: 'block' },
 }
