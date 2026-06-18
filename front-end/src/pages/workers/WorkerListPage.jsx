@@ -17,8 +17,18 @@ const SERVICE_PHOTOS = {
 const getServicePhoto = (name = '') => SERVICE_PHOTOS[norm(name)] || '/imgs/worker.jpg'
 
 const DEMO_WORKERS = [
-  { id: 'demo-w1', name: 'Wagner Murbach', serviceTypes: ['Elétrica'], serviceTypeIds: ['st1'], workingSince: '2018-05-10' },
-  { id: 'demo-w2', name: 'Fabinho',        serviceTypes: ['Elétrica'], serviceTypeIds: ['st1'], workingSince: '2020-03-15' },
+  { id: 'demo-w1',  name: 'Wagner Murbach',    serviceTypes: ['Elétrica'],   serviceTypeIds: ['st1'], workingSince: '2018-05-10' },
+  { id: 'demo-w2',  name: 'Fabinho',           serviceTypes: ['Elétrica'],   serviceTypeIds: ['st1'], workingSince: '2020-03-15' },
+  { id: 'demo-w3',  name: 'Carlos Eduardo',    serviceTypes: ['Pintura'],    serviceTypeIds: ['st2'], workingSince: '2017-08-22' },
+  { id: 'demo-w4',  name: 'Renata Moura',      serviceTypes: ['Pintura'],    serviceTypeIds: ['st2'], workingSince: '2019-11-05' },
+  { id: 'demo-w5',  name: 'Paulo Henrique',    serviceTypes: ['Construção'], serviceTypeIds: ['st3'], workingSince: '2015-03-14' },
+  { id: 'demo-w6',  name: 'Sérgio Bonfim',     serviceTypes: ['Construção'], serviceTypeIds: ['st3'], workingSince: '2013-07-30' },
+  { id: 'demo-w7',  name: 'Roberto Alves',     serviceTypes: ['Encanamento'],serviceTypeIds: ['st4'], workingSince: '2016-01-18' },
+  { id: 'demo-w8',  name: 'Marcelo Teixeira',  serviceTypes: ['Encanamento'],serviceTypeIds: ['st4'], workingSince: '2021-04-09' },
+  { id: 'demo-w9',  name: 'João Batista',      serviceTypes: ['Jardinagem'], serviceTypeIds: ['st5'], workingSince: '2018-09-01' },
+  { id: 'demo-w10', name: 'Fernanda Lima',     serviceTypes: ['Jardinagem'], serviceTypeIds: ['st5'], workingSince: '2022-02-20' },
+  { id: 'demo-w11', name: 'Alexandre Ramos',   serviceTypes: ['Marcenaria'], serviceTypeIds: ['st6'], workingSince: '2014-06-11' },
+  { id: 'demo-w12', name: 'Guilherme Neto',    serviceTypes: ['Marcenaria'], serviceTypeIds: ['st6'], workingSince: '2019-10-03' },
 ]
 
 function StarIcons({ count = 4 }) {
