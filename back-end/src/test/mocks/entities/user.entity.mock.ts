@@ -6,7 +6,7 @@ export function mockUserEntity(id?: string): UserEntity {
         id: id ?? randomUUID(),
         name: 'example',
         email: 'a@example',
-        password: '123',
+        password: 'hashed-123',
         phone: '+554300000000',
         createdAt: new Date(),
         updatedAt: new Date(),
