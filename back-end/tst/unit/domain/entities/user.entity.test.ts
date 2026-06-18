@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import UserEntity from './user.entity'
+import UserEntity from '@domain/entities/user.entity'
 
 describe('UserEntity — testes de unidade', () => {
     it('deve criar um usuário com id gerado automaticamente', () => {

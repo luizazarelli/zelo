@@ -1,9 +1,9 @@
 import type { IHireRepository } from '@domain/repositories/hire.repository'
-import { mockHireEntity } from 'src/test/mocks/entities/hire.entity.mock'
-import { mockHireRepository } from 'src/test/mocks/repositories/hire.repository.mock'
+import { mockHireEntity } from '@test/mocks/entities/hire.entity.mock'
+import { mockHireRepository } from '@test/mocks/repositories/hire.repository.mock'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { HireNotFound } from '../_errors/hire-not-found'
-import { UpdateHireStatusUsecase } from './update-hire-status.usecase'
+import { HireNotFound } from '@application/use-cases/hire/_errors/hire-not-found'
+import { UpdateHireStatusUsecase } from '@application/use-cases/hire/update-hire-status/update-hire-status.usecase'
 
 describe('UpdateHireStatusUsecase — testes de unidade', () => {
     let hireRepo: IHireRepository

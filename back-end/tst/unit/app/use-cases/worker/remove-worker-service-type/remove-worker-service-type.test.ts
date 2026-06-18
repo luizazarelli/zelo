@@ -1,14 +1,14 @@
 import { IServiceTypeRepository } from "@domain/repositories/serviceType.repository";
 import { IWorkerRepository } from "@domain/repositories/worker.repository";
-import { mockServiceTypeEntity } from "src/test/mocks/entities/serviceType.entity.mock";
-import { mockWorkerEntity } from "src/test/mocks/entities/worker.entity.mock";
-import { mockServiceTypeRepository } from "src/test/mocks/repositories/serviceType.repository.mock";
-import { mockWorkerRepository } from "src/test/mocks/repositories/worker.repository.mock";
+import { mockServiceTypeEntity } from "@test/mocks/entities/serviceType.entity.mock";
+import { mockWorkerEntity } from "@test/mocks/entities/worker.entity.mock";
+import { mockServiceTypeRepository } from "@test/mocks/repositories/serviceType.repository.mock";
+import { mockWorkerRepository } from "@test/mocks/repositories/worker.repository.mock";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { ServiceTypeNotFound } from "../_errors/service-type-not-found";
-import { WorkerNotFound } from "../_errors/worker-not-found";
-import { RemoveWorkerServiceTypeInputDto } from "./remove-worker-service-type.input.dto";
-import { RemoveWorkerServiceTypeUseCase } from "./remove-worker-service-type.usecase";
+import { ServiceTypeNotFound } from "@application/use-cases/worker/_errors/service-type-not-found";
+import { WorkerNotFound } from "@application/use-cases/worker/_errors/worker-not-found";
+import { RemoveWorkerServiceTypeInputDto } from "@application/use-cases/worker/remove-worker-service-type/remove-worker-service-type.input.dto";
+import { RemoveWorkerServiceTypeUseCase } from "@application/use-cases/worker/remove-worker-service-type/remove-worker-service-type.usecase";
 
 describe('removeWorkerServiceType', () => {
     let usecase: RemoveWorkerServiceTypeUseCase;

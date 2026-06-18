@@ -19,8 +19,7 @@ export default defineConfig({
                 test: {
                     name: 'unit',
                     include: [
-                        './src/app/**/*.test.ts',
-                        './src/domain/**/*.test.ts',
+                        './tst/unit/**/*.test.ts',
                     ],
                     setupFiles: ['./vitest.setup.ts'],
                     env: testEnv,
@@ -30,7 +29,7 @@ export default defineConfig({
                 plugins: [tsconfigPaths()],
                 test: {
                     name: 'integration',
-                    include: ['./src/**/*.integration.test.ts'],
+                    include: ['./tst/integration/**/*.integration.test.ts'],
                     setupFiles: ['./vitest.setup.ts'],
                     env: testEnv,
                 },
