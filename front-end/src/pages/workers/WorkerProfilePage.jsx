@@ -141,7 +141,7 @@ export default function WorkerProfilePage() {
 
         {[
           { stars: 5, text: 'Serviço excelente, pontual e muito cuidadoso. Super recomendo!', author: 'Mariana Costa' },
-          { stars: 4, text: 'Ótimo profissional, resolveu o problema rapidinho. Só chegou um pouquinho atrasado, mas o trabalho ficou perfeito.', author: 'Ricardo Souza' },
+          { stars: 4, text: 'Ótimo profissional, resolveu o problema rapidinho. O trabalho ficou perfeito.', author: 'Ricardo Souza' },
         ].map((r, i) => (
           <div key={i} style={s.review}>
             <div style={s.reviewHeader}>
