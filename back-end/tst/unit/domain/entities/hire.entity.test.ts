@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { HireEntity } from './hire.entity'
+import { HireEntity } from '@domain/entities/hire.entity'
 
 const makeProps = () => ({
     clientId: 'client-uuid',

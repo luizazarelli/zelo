@@ -1,13 +1,13 @@
 import type { IHireRepository } from '@domain/repositories/hire.repository'
 import type { IUserRepository } from '@domain/repositories/user.repository'
 import type { IWorkerRepository } from '@domain/repositories/worker.repository'
-import { mockHireRepository } from 'src/test/mocks/repositories/hire.repository.mock'
-import { mockUserRepository } from 'src/test/mocks/repositories/user.repository.mock'
-import { mockWorkerRepository } from 'src/test/mocks/repositories/worker.repository.mock'
+import { mockHireRepository } from '@test/mocks/repositories/hire.repository.mock'
+import { mockUserRepository } from '@test/mocks/repositories/user.repository.mock'
+import { mockWorkerRepository } from '@test/mocks/repositories/worker.repository.mock'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { UserNotFound } from '../../_errors/userNotFound.error'
-import { WorkerNotFound } from '../../worker/_errors/worker-not-found'
-import { CreateHireUsecase } from './create-hire.usecase'
+import { UserNotFound } from '@application/use-cases/_errors/userNotFound.error'
+import { WorkerNotFound } from '@application/use-cases/worker/_errors/worker-not-found'
+import { CreateHireUsecase } from '@application/use-cases/hire/create-hire/create-hire.usecase'
 
 const input = {
     clientId: 'client-uuid',

@@ -9,7 +9,8 @@
             "@domain/*": ["./src/domain/*"],
             "@infra/*": ["./src/infra/*"],
             "@presentation/*": ["./src/presentation/*"],
-            "@common/*": ["./src/common/*"]
+            "@common/*": ["./src/common/*"],
+            "@test/*": ["./tst/*"]
         },
         "outDir": "./dist",
         "sourceMap": true,

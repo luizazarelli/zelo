@@ -1,8 +1,8 @@
 import type { IServiceTypeRepository } from "@domain/repositories/serviceType.repository";
-import { mockServiceTypeEntity } from "src/test/mocks/entities/serviceType.entity.mock";
-import { mockServiceTypeRepository } from "src/test/mocks/repositories/serviceType.repository.mock";
+import { mockServiceTypeEntity } from "@test/mocks/entities/serviceType.entity.mock";
+import { mockServiceTypeRepository } from "@test/mocks/repositories/serviceType.repository.mock";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { SearchServiceTypesUseCase } from "./search-service-types.usecase";
+import { SearchServiceTypesUseCase } from "@application/use-cases/service-type/search-service-types/search-service-types.usecase";
 
 describe("SearchServiceTypes", () => {
 	let usecase: SearchServiceTypesUseCase;

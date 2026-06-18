@@ -2,14 +2,14 @@ import { IHashProvider } from '@domain/providers/hash.provider';
 import { IJwtProvider } from '@domain/providers/jwt.provider';
 import { IUserRepository } from '@domain/repositories/user.repository';
 import IJwtPayload from 'src/@types/JwtPayload';
-import { mockUserEntity } from 'src/test/mocks/entities/user.entity.mock';
-import { mockHashProvider } from 'src/test/mocks/providers/hash.provider';
-import { mockJwtProvider } from 'src/test/mocks/providers/jwt.provider';
-import { mockUserRepository } from 'src/test/mocks/repositories/user.repository.mock';
+import { mockUserEntity } from '@test/mocks/entities/user.entity.mock';
+import { mockHashProvider } from '@test/mocks/providers/hash.provider';
+import { mockJwtProvider } from '@test/mocks/providers/jwt.provider';
+import { mockUserRepository } from '@test/mocks/repositories/user.repository.mock';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { InvalidCredentials } from '../_errors/invalidCredentials.error';
-import { SignInInputDTO } from './sign-in.input.dto';
-import { SignInUsecase } from './sign-in.usecase';
+import { InvalidCredentials } from '@application/use-cases/auth/_errors/invalidCredentials.error';
+import { SignInInputDTO } from '@application/use-cases/auth/sign-in/sign-in.input.dto';
+import { SignInUsecase } from '@application/use-cases/auth/sign-in/sign-in.usecase';
 
 describe('SignInUsecase', () => {
     let useCase: SignInUsecase;

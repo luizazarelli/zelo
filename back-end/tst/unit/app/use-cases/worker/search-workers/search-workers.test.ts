@@ -1,12 +1,12 @@
 import type { IUserRepository } from "@domain/repositories/user.repository";
 import type { IWorkerRepository } from "@domain/repositories/worker.repository";
-import { mockServiceTypeEntity } from "src/test/mocks/entities/serviceType.entity.mock";
-import { mockUserEntity } from "src/test/mocks/entities/user.entity.mock";
-import { mockWorkerEntity } from "src/test/mocks/entities/worker.entity.mock";
-import { mockUserRepository } from "src/test/mocks/repositories/user.repository.mock";
-import { mockWorkerRepository } from "src/test/mocks/repositories/worker.repository.mock";
+import { mockServiceTypeEntity } from "@test/mocks/entities/serviceType.entity.mock";
+import { mockUserEntity } from "@test/mocks/entities/user.entity.mock";
+import { mockWorkerEntity } from "@test/mocks/entities/worker.entity.mock";
+import { mockUserRepository } from "@test/mocks/repositories/user.repository.mock";
+import { mockWorkerRepository } from "@test/mocks/repositories/worker.repository.mock";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { SearchWorkersUseCase } from "./search-workers.usecase";
+import { SearchWorkersUseCase } from "@application/use-cases/worker/search-workers/search-workers.usecase";
 
 describe("SearchWorkers", () => {
 	let usecase: SearchWorkersUseCase;

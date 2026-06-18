@@ -1,14 +1,14 @@
 import type { IHireRepository } from '@domain/repositories/hire.repository'
 import type { IPaymentRepository } from '@domain/repositories/payment.repository'
-import { mockHireEntity } from 'src/test/mocks/entities/hire.entity.mock'
-import { mockPaymentEntity } from 'src/test/mocks/entities/payment.entity.mock'
-import { mockHireRepository } from 'src/test/mocks/repositories/hire.repository.mock'
-import { mockPaymentRepository } from 'src/test/mocks/repositories/payment.repository.mock'
+import { mockHireEntity } from '@test/mocks/entities/hire.entity.mock'
+import { mockPaymentEntity } from '@test/mocks/entities/payment.entity.mock'
+import { mockHireRepository } from '@test/mocks/repositories/hire.repository.mock'
+import { mockPaymentRepository } from '@test/mocks/repositories/payment.repository.mock'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { HireNotFound } from '../../hire/_errors/hire-not-found'
-import { HireNotAccepted } from '../../hire/_errors/hire-not-accepted'
-import { HireAlreadyPaid } from '../_errors/hire-already-paid'
-import { ProcessPaymentUsecase } from './process-payment.usecase'
+import { HireNotFound } from '@application/use-cases/hire/_errors/hire-not-found'
+import { HireNotAccepted } from '@application/use-cases/hire/_errors/hire-not-accepted'
+import { HireAlreadyPaid } from '@application/use-cases/payment/_errors/hire-already-paid'
+import { ProcessPaymentUsecase } from '@application/use-cases/payment/process-payment/process-payment.usecase'
 
 describe('ProcessPaymentUsecase — testes de unidade', () => {
     let hireRepo: IHireRepository
