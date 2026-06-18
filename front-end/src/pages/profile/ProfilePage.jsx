@@ -30,7 +30,7 @@ function Field({ label, value }) {
 }
 
 const f = {
-  wrap: { marginBottom: 18 },
+  wrap: { marginBottom: 18, textAlign: 'left' },
   label: { fontSize: 16, fontWeight: '500', color: '#252525', margin: '0 0 3px' },
   value: { fontSize: 12, color: '#3c3c3c', margin: 0 },
 }
@@ -134,14 +134,14 @@ const s = {
   },
   displayName: { fontSize: 24, fontWeight: 'bold', color: '#000', marginTop: 8, marginBottom: 0 },
   email: { fontSize: 12, color: '#000', margin: 0 },
-  body: { padding: '8px 30px' },
+  body: { padding: '8px 30px', textAlign: 'center' },
   formTitle: { fontSize: 16, fontWeight: '500', color: '#252525', marginBottom: 16, marginTop: 0 },
-  label: { display: 'block', fontSize: 16, fontWeight: '500', color: '#252525', marginBottom: 6, marginTop: 14 },
+  label: { display: 'block', fontSize: 16, fontWeight: '500', color: '#252525', marginBottom: 6, marginTop: 14, textAlign: 'left' },
   input: {
     display: 'block', width: '100%', boxSizing: 'border-box',
     border: '1px solid rgba(60,60,60,0.5)', borderRadius: 5,
     padding: '10px 12px', fontSize: 14,
-    background: '#fff', color: '#252525', outline: 'none',
+    background: '#fff', color: '#252525', outline: 'none', textAlign: 'left',
   },
   error: { color: '#e74c3c', fontSize: 12, marginTop: 8 },
   editBtn: {
