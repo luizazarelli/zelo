@@ -168,7 +168,8 @@ Known limitations:
 ## Team
 
 - Ana Luíza Zarelli Nogueira
-- <!-- add teammates -->
+- Gustavo Stallman Freire
+- Frederico Bonin Krett
 
 ---
 
