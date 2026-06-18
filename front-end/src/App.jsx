@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom'
 import { AuthProvider, useAuth } from './context/AuthContext'
 import LoginPage from './pages/auth/LoginPage'
 import RegisterPage from './pages/auth/RegisterPage'
@@ -16,8 +16,12 @@ function PrivateRoute({ children }) {
   return user ? children : <Navigate to="/login" />
 }
 
+const NAV_ROUTES = ['/', '/historico', '/perfil']
+
 function AppRoutes() {
   const { user } = useAuth()
+  const { pathname } = useLocation()
+  const showNav = user && NAV_ROUTES.includes(pathname)
   return (
     <>
       <Routes>
@@ -32,7 +36,7 @@ function AppRoutes() {
         <Route path="/perfil" element={<PrivateRoute><ProfilePage /></PrivateRoute>} />
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>
-      {user && <BottomNav />}
+      {showNav && <BottomNav />}
     </>
   )
 }
