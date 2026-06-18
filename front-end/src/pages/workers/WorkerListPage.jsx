@@ -17,12 +17,8 @@ const SERVICE_PHOTOS = {
 const getServicePhoto = (name = '') => SERVICE_PHOTOS[norm(name)] || '/imgs/worker.jpg'
 
 const DEMO_WORKERS = [
-  { id: 'w1', name: 'Lucas Martins',   workingSince: '2019-01-01' },
-  { id: 'w2', name: 'Pedro Santos',    workingSince: '2021-06-15' },
-  { id: 'w3', name: 'Thiago Costa',    workingSince: '2018-03-20' },
-  { id: 'w4', name: 'Marcos Oliveira', workingSince: '2020-11-01' },
-  { id: 'w5', name: 'Diego Pereira',   workingSince: '2016-07-10' },
-  { id: 'w6', name: 'Gustavo Lima',    workingSince: '2017-09-05' },
+  { id: 'demo-w1', name: 'Wagner Murbach', serviceTypes: ['Elétrica'], serviceTypeIds: ['st1'], workingSince: '2018-05-10' },
+  { id: 'demo-w2', name: 'Fabinho',        serviceTypes: ['Elétrica'], serviceTypeIds: ['st1'], workingSince: '2020-03-15' },
 ]
 
 function StarIcons({ count = 4 }) {
@@ -48,10 +44,15 @@ export default function WorkerListPage() {
       .then(r => {
         const ws = r.data.data?.workers || []
         const apiNames = new Set(ws.map(w => w.name?.toLowerCase()))
-        const extras = DEMO_WORKERS.filter(d => !apiNames.has(d.name.toLowerCase()))
+        const extras = DEMO_WORKERS.filter(d =>
+          !apiNames.has(d.name.toLowerCase()) &&
+          (!serviceTypeId || d.serviceTypeIds?.includes(serviceTypeId))
+        )
         setWorkers([...ws, ...extras])
       })
-      .catch(() => setWorkers(DEMO_WORKERS))
+      .catch(() => setWorkers(
+        DEMO_WORKERS.filter(d => !serviceTypeId || d.serviceTypeIds?.includes(serviceTypeId))
+      ))
   }, [])
 
   return (
