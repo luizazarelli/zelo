@@ -20,6 +20,15 @@ const av = {
   }
 }
 
+const chatKey = (hireId) => `zelo_chat_${hireId}`
+
+const saveLocal = (hireId, msgs) => {
+  try { localStorage.setItem(chatKey(hireId), JSON.stringify(msgs)) } catch {}
+}
+const readLocal = (hireId) => {
+  try { return JSON.parse(localStorage.getItem(chatKey(hireId)) || '[]') } catch { return [] }
+}
+
 export default function ChatPage() {
   const { state } = useLocation()
   const { worker, hire } = state || {}
@@ -35,10 +44,17 @@ export default function ChatPage() {
   useEffect(() => { bottomRef.current?.scrollIntoView({ behavior: 'smooth' }) }, [messages])
 
   const load = async () => {
+    const saved = hire ? readLocal(hire.id) : []
+    const savedImgs = saved.filter(m => m.img)
     try {
       const { data } = await messageApi.list(hire.id, user.id)
-      setMessages(data.data?.messages || [])
-    } catch {}
+      const api = data.data?.messages || []
+      const apiIds = new Set(api.map(m => m.id))
+      const extraImgs = savedImgs.filter(m => !apiIds.has(m.id))
+      setMessages([...api, ...extraImgs])
+    } catch {
+      setMessages(saved)
+    }
   }
 
   const handleAttach = () => fileRef.current?.click()
@@ -46,7 +62,9 @@ export default function ChatPage() {
   const handleFile = (e) => {
     const file = e.target.files?.[0]
     if (!file) return
-    setPendingImg(URL.createObjectURL(file))
+    const reader = new FileReader()
+    reader.onload = (ev) => setPendingImg(ev.target.result)
+    reader.readAsDataURL(file)
     e.target.value = ''
   }
 
@@ -55,14 +73,24 @@ export default function ChatPage() {
     if (!hire) return
 
     if (pendingImg) {
-      setMessages(prev => [...prev, { id: `tmp-img-${Date.now()}`, senderId: user.id, img: pendingImg }])
+      const msg = { id: `tmp-img-${Date.now()}`, senderId: user.id, img: pendingImg, createdAt: new Date().toISOString() }
+      setMessages(prev => {
+        const next = [...prev, msg]
+        saveLocal(hire.id, next)
+        return next
+      })
       setPendingImg(null)
     }
 
     if (text.trim()) {
       const content = text.trim()
       setText('')
-      setMessages(prev => [...prev, { id: `tmp-${Date.now()}`, senderId: user.id, content }])
+      const msg = { id: `tmp-${Date.now()}`, senderId: user.id, content, createdAt: new Date().toISOString() }
+      setMessages(prev => {
+        const next = [...prev, msg]
+        saveLocal(hire.id, next)
+        return next
+      })
       try {
         await messageApi.send(hire.id, { senderId: user.id, content })
         load()
