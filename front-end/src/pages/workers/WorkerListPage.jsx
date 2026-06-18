@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { workerApi } from '../../api/api'
 
@@ -17,28 +17,47 @@ const SERVICE_PHOTOS = {
 const getServicePhoto = (name = '') => SERVICE_PHOTOS[norm(name)] || '/imgs/worker.jpg'
 
 const DEMO_WORKERS = [
-  { id: 'demo-w1',  name: 'Wagner Murbach',    serviceTypes: ['Elétrica'],   serviceTypeIds: ['st1'], workingSince: '2018-05-10' },
-  { id: 'demo-w2',  name: 'Fabinho',           serviceTypes: ['Elétrica'],   serviceTypeIds: ['st1'], workingSince: '2020-03-15' },
-  { id: 'demo-w3',  name: 'Carlos Eduardo',    serviceTypes: ['Pintura'],    serviceTypeIds: ['st2'], workingSince: '2017-08-22' },
-  { id: 'demo-w4',  name: 'Renata Moura',      serviceTypes: ['Pintura'],    serviceTypeIds: ['st2'], workingSince: '2019-11-05' },
-  { id: 'demo-w5',  name: 'Paulo Henrique',    serviceTypes: ['Construção'], serviceTypeIds: ['st3'], workingSince: '2015-03-14' },
-  { id: 'demo-w6',  name: 'Sérgio Bonfim',     serviceTypes: ['Construção'], serviceTypeIds: ['st3'], workingSince: '2013-07-30' },
-  { id: 'demo-w7',  name: 'Roberto Alves',     serviceTypes: ['Encanamento'],serviceTypeIds: ['st4'], workingSince: '2016-01-18' },
-  { id: 'demo-w8',  name: 'Marcelo Teixeira',  serviceTypes: ['Encanamento'],serviceTypeIds: ['st4'], workingSince: '2021-04-09' },
-  { id: 'demo-w9',  name: 'João Batista',      serviceTypes: ['Jardinagem'], serviceTypeIds: ['st5'], workingSince: '2018-09-01' },
-  { id: 'demo-w10', name: 'Fernanda Lima',     serviceTypes: ['Jardinagem'], serviceTypeIds: ['st5'], workingSince: '2022-02-20' },
-  { id: 'demo-w11', name: 'Alexandre Ramos',   serviceTypes: ['Marcenaria'], serviceTypeIds: ['st6'], workingSince: '2014-06-11' },
-  { id: 'demo-w12', name: 'Guilherme Neto',    serviceTypes: ['Marcenaria'], serviceTypeIds: ['st6'], workingSince: '2019-10-03' },
+  { id: 'demo-w1',  name: 'Wagner Murbach',    serviceTypes: ['Elétrica'],   serviceTypeIds: ['st1'], workingSince: '2018-05-10', rating: 4.5 },
+  { id: 'demo-w2',  name: 'Fabinho',           serviceTypes: ['Elétrica'],   serviceTypeIds: ['st1'], workingSince: '2020-03-15', rating: 5   },
+  { id: 'demo-w3',  name: 'Carlos Eduardo',    serviceTypes: ['Pintura'],    serviceTypeIds: ['st2'], workingSince: '2017-08-22', rating: 4   },
+  { id: 'demo-w4',  name: 'Renata Moura',      serviceTypes: ['Pintura'],    serviceTypeIds: ['st2'], workingSince: '2019-11-05', rating: 5   },
+  { id: 'demo-w5',  name: 'Paulo Henrique',    serviceTypes: ['Construção'], serviceTypeIds: ['st3'], workingSince: '2015-03-14', rating: 4.5 },
+  { id: 'demo-w6',  name: 'Sérgio Bonfim',     serviceTypes: ['Construção'], serviceTypeIds: ['st3'], workingSince: '2013-07-30', rating: 4   },
+  { id: 'demo-w7',  name: 'Roberto Alves',     serviceTypes: ['Encanamento'],serviceTypeIds: ['st4'], workingSince: '2016-01-18', rating: 5   },
+  { id: 'demo-w8',  name: 'Marcelo Teixeira',  serviceTypes: ['Encanamento'],serviceTypeIds: ['st4'], workingSince: '2021-04-09', rating: 4   },
+  { id: 'demo-w9',  name: 'João Batista',      serviceTypes: ['Jardinagem'], serviceTypeIds: ['st5'], workingSince: '2018-09-01', rating: 4.5 },
+  { id: 'demo-w10', name: 'Fernanda Lima',     serviceTypes: ['Jardinagem'], serviceTypeIds: ['st5'], workingSince: '2022-02-20', rating: 5   },
+  { id: 'demo-w11', name: 'Alexandre Ramos',   serviceTypes: ['Marcenaria'], serviceTypeIds: ['st6'], workingSince: '2014-06-11', rating: 4.5 },
+  { id: 'demo-w12', name: 'Guilherme Neto',    serviceTypes: ['Marcenaria'], serviceTypeIds: ['st6'], workingSince: '2019-10-03', rating: 4   },
 ]
 
-function StarIcons({ count = 4 }) {
+let _suid = 0
+const STAR_PATH = "M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"
+
+function StarIcons({ count = 4, size = 11 }) {
+  const uid = useRef(++_suid).current
   return (
     <div style={{ display: 'flex', gap: 2, marginTop: 2 }}>
-      {[1, 2, 3, 4, 5].map(i => (
-        <svg key={i} width="11" height="11" viewBox="0 0 24 24" fill={i <= count ? '#38b31f' : 'rgba(255,255,255,0.4)'}>
-          <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
-        </svg>
-      ))}
+      {[1, 2, 3, 4, 5].map(i => {
+        const isFull = i <= Math.floor(count)
+        const isHalf = !isFull && i === Math.ceil(count) && count % 1 !== 0
+        const clipId = `sc-${uid}-${i}`
+        return (
+          <svg key={i} width={size} height={size} viewBox="0 0 24 24">
+            {isHalf && (
+              <defs>
+                <clipPath id={clipId}>
+                  <rect x="0" y="0" width="12" height="24" />
+                </clipPath>
+              </defs>
+            )}
+            <path fill="rgba(255,255,255,0.35)" d={STAR_PATH} />
+            {(isFull || isHalf) && (
+              <path fill="#fff" d={STAR_PATH} clipPath={isHalf ? `url(#${clipId})` : undefined} />
+            )}
+          </svg>
+        )
+      })}
     </div>
   )
 }
@@ -91,7 +110,7 @@ export default function WorkerListPage() {
                 <div style={s.cardInfo}>
                   <p style={s.workerName}>{w.name}</p>
                   <p style={s.workerYears}>{years}</p>
-                  <StarIcons count={4} />
+                  <StarIcons count={w.rating ?? 4} />
                 </div>
               </div>
             )

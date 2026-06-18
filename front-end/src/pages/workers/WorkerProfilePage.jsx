@@ -19,14 +19,33 @@ const getServicePhoto = (name = '') => SERVICE_PHOTOS[norm(name)] || '/imgs/work
 
 const COVER_SLIDES = ['/imgs/worker-cover.jpg', '/imgs/portfolio1.jpg', '/imgs/portfolio2.jpg', '/imgs/worker.jpg']
 
+let _psuid = 0
+const STAR_PATH = "M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"
+
 function StarIcons({ count = 4, size = 13 }) {
+  const uid = useRef(++_psuid).current
   return (
     <div style={{ display: 'flex', gap: 2 }}>
-      {[1, 2, 3, 4, 5].map(i => (
-        <svg key={i} width={size} height={size} viewBox="0 0 24 24" fill={i <= count ? '#38b31f' : '#ccc'}>
-          <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
-        </svg>
-      ))}
+      {[1, 2, 3, 4, 5].map(i => {
+        const isFull = i <= Math.floor(count)
+        const isHalf = !isFull && i === Math.ceil(count) && count % 1 !== 0
+        const clipId = `pc-${uid}-${i}`
+        return (
+          <svg key={i} width={size} height={size} viewBox="0 0 24 24">
+            {isHalf && (
+              <defs>
+                <clipPath id={clipId}>
+                  <rect x="0" y="0" width="12" height="24" />
+                </clipPath>
+              </defs>
+            )}
+            <path fill="#ddd" d={STAR_PATH} />
+            {(isFull || isHalf) && (
+              <path fill="#38b31f" d={STAR_PATH} clipPath={isHalf ? `url(#${clipId})` : undefined} />
+            )}
+          </svg>
+        )
+      })}
     </div>
   )
 }
@@ -131,7 +150,7 @@ export default function WorkerProfilePage() {
       <div style={s.content}>
         <p style={s.name}>{worker.name}</p>
         <p style={s.years}>{years}</p>
-        <StarIcons count={4} size={13} />
+        <StarIcons count={worker.rating ?? 4} size={13} />
 
         <button style={s.hireBtn} onClick={handleHire} disabled={loading}>
           {loading ? 'Aguarde...' : 'Solicitar Orçamento'}
@@ -141,7 +160,7 @@ export default function WorkerProfilePage() {
 
         {[
           { stars: 5, text: 'Serviço excelente, pontual e muito cuidadoso. Super recomendo!', author: 'Mariana Costa' },
-          { stars: 4, text: 'Ótimo profissional, resolveu o problema rapidinho. Só chegou um pouquinho atrasado, mas o trabalho ficou perfeito.', author: 'Ricardo Souza' },
+          { stars: 4, text: 'Ótimo profissional, resolveu o problema rapidinho. O trabalho ficou perfeito.', author: 'Ricardo Souza' },
         ].map((r, i) => (
           <div key={i} style={s.review}>
             <div style={s.reviewHeader}>
