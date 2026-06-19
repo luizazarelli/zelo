@@ -157,11 +157,11 @@ export default function HomePage() {
 
 const s = {
   page: { background: '#fbfbfb', minHeight: '100vh' },
-  header: { padding: '50px 30px 10px' },
+  header: { padding: '50px 20px 10px', textAlign: 'left' },
   welcome: { color: '#38b31f', fontSize: 12, fontWeight: '600', lineHeight: 1.2, margin: 0 },
   userName: { color: '#252525', fontSize: 12, lineHeight: 1.2, margin: 0 },
 
-  bannerWrap: { padding: '0 30px 16px' },
+  bannerWrap: { padding: '0 20px 16px' },
   bannerOuter: { borderRadius: 10, overflow: 'hidden', cursor: 'grab', userSelect: 'none' },
   bannerTrack: { display: 'flex', willChange: 'transform' },
   slide: { minWidth: '100%', height: 188, position: 'relative', overflow: 'hidden', flexShrink: 0 },
@@ -175,7 +175,7 @@ const s = {
   dot: { width: 8, height: 8, borderRadius: 4, background: '#ccc', display: 'inline-block', cursor: 'pointer' },
   dotActive: { background: '#38b31f' },
 
-  section: { marginTop: 10, padding: '16px 30px' },
+  section: { marginTop: 10, padding: '16px 20px' },
   sTitle: { fontSize: 24, fontWeight: 'bold', color: '#252525', marginBottom: 2, marginTop: 0 },
   sSub: { fontSize: 12, color: '#38b31f', fontWeight: '300', marginBottom: 14, marginTop: 0 },
 
