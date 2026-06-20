@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
-import { workerApi } from '../../api/api'
+import { workerApi, SERVER_BASE } from '../../api/api'
 
 const norm = (s = '') => s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '')
 
@@ -15,21 +15,6 @@ const SERVICE_PHOTOS = {
 }
 
 const getServicePhoto = (name = '') => SERVICE_PHOTOS[norm(name)] || '/imgs/worker.jpg'
-
-const DEMO_WORKERS = [
-  { id: 'demo-w1',  name: 'Wagner Murbach',    serviceTypes: ['Elétrica'],   serviceTypeIds: ['st1'], workingSince: '2018-05-10', rating: 4.5 },
-  { id: 'demo-w2',  name: 'Fabinho',           serviceTypes: ['Elétrica'],   serviceTypeIds: ['st1'], workingSince: '2020-03-15', rating: 5   },
-  { id: 'demo-w3',  name: 'Carlos Eduardo',    serviceTypes: ['Pintura'],    serviceTypeIds: ['st2'], workingSince: '2017-08-22', rating: 4   },
-  { id: 'demo-w4',  name: 'Renata Moura',      serviceTypes: ['Pintura'],    serviceTypeIds: ['st2'], workingSince: '2019-11-05', rating: 5   },
-  { id: 'demo-w5',  name: 'Paulo Henrique',    serviceTypes: ['Construção'], serviceTypeIds: ['st3'], workingSince: '2015-03-14', rating: 4.5 },
-  { id: 'demo-w6',  name: 'Sérgio Bonfim',     serviceTypes: ['Construção'], serviceTypeIds: ['st3'], workingSince: '2013-07-30', rating: 4   },
-  { id: 'demo-w7',  name: 'Roberto Alves',     serviceTypes: ['Encanamento'],serviceTypeIds: ['st4'], workingSince: '2016-01-18', rating: 5   },
-  { id: 'demo-w8',  name: 'Marcelo Teixeira',  serviceTypes: ['Encanamento'],serviceTypeIds: ['st4'], workingSince: '2021-04-09', rating: 4   },
-  { id: 'demo-w9',  name: 'João Batista',      serviceTypes: ['Jardinagem'], serviceTypeIds: ['st5'], workingSince: '2018-09-01', rating: 4.5 },
-  { id: 'demo-w10', name: 'Fernanda Lima',     serviceTypes: ['Jardinagem'], serviceTypeIds: ['st5'], workingSince: '2022-02-20', rating: 5   },
-  { id: 'demo-w11', name: 'Alexandre Ramos',   serviceTypes: ['Marcenaria'], serviceTypeIds: ['st6'], workingSince: '2014-06-11', rating: 4.5 },
-  { id: 'demo-w12', name: 'Guilherme Neto',    serviceTypes: ['Marcenaria'], serviceTypeIds: ['st6'], workingSince: '2019-10-03', rating: 4   },
-]
 
 let _suid = 0
 const STAR_PATH = "M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"
@@ -67,21 +52,12 @@ export default function WorkerListPage() {
   const { state } = useLocation()
   const { serviceTypeId, serviceTypeName } = state || {}
   const [workers, setWorkers] = useState([])
+  const [error, setError] = useState(false)
 
   useEffect(() => {
     workerApi.search(serviceTypeId ? [serviceTypeId] : undefined)
-      .then(r => {
-        const ws = r.data.data?.workers || []
-        const apiNames = new Set(ws.map(w => w.name?.toLowerCase()))
-        const extras = DEMO_WORKERS.filter(d =>
-          !apiNames.has(d.name.toLowerCase()) &&
-          (!serviceTypeId || d.serviceTypeIds?.includes(serviceTypeId))
-        )
-        setWorkers([...ws, ...extras])
-      })
-      .catch(() => setWorkers(
-        DEMO_WORKERS.filter(d => !serviceTypeId || d.serviceTypeIds?.includes(serviceTypeId))
-      ))
+      .then(r => setWorkers(r.data.data?.workers || []))
+      .catch(() => setError(true))
   }, [])
 
   return (
@@ -94,6 +70,18 @@ export default function WorkerListPage() {
         <p style={s.title}>Profissionais em {serviceTypeName || 'elétrica'}</p>
         <p style={s.sub}>Encontre o profissional perfeito</p>
 
+        {error && (
+          <p style={{ color: '#aaa', fontSize: 14, textAlign: 'center', marginTop: 40 }}>
+            Não foi possível carregar os profissionais.
+          </p>
+        )}
+
+        {!error && workers.length === 0 && (
+          <p style={{ color: '#aaa', fontSize: 14, textAlign: 'center', marginTop: 40 }}>
+            Nenhum profissional encontrado para esta categoria.
+          </p>
+        )}
+
         <div style={s.grid}>
           {workers.map(w => {
             const years = w.workingSince
@@ -105,7 +93,7 @@ export default function WorkerListPage() {
                 style={s.card}
                 onClick={() => navigate(`/workers/${w.id}`, { state: { worker: w } })}
               >
-                <img src={getServicePhoto(w.serviceTypes?.[0] || serviceTypeName)} style={s.cardImg} alt="" />
+                <img src={w.profilePicture ? `${SERVER_BASE}${w.profilePicture}` : getServicePhoto(w.serviceTypes?.[0] || serviceTypeName)} style={s.cardImg} alt="" />
                 <div style={s.cardOverlay} />
                 <div style={s.cardInfo}>
                   <p style={s.workerName}>{w.name}</p>

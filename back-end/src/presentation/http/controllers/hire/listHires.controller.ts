@@ -1,5 +1,6 @@
 import { ListHiresInputDto } from '@application/use-cases/hire/list-hires/list-hires.input.dto';
 import { ListHiresUsecase } from '@application/use-cases/hire/list-hires/list-hires.usecase';
+import { authMiddleware } from '@presentation/http/middleware/auth.middleware';
 import { ResponseProvider } from '@presentation/provider/response.provider';
 import type { FastifyInstance, FastifyRequest } from 'fastify';
 import { container } from 'tsyringe';
@@ -7,7 +8,7 @@ import BaseController from '../base.controller';
 
 export default class ListHiresController extends BaseController {
     register(http: FastifyInstance): void {
-        http.get('/api/v1/hire', async (req: FastifyRequest<{ Querystring: Record<string, string> }>, reply) => {
+        http.get('/api/v1/hire', { preHandler: authMiddleware.auth }, async (req: FastifyRequest<{ Querystring: Record<string, string> }>, reply) => {
             const payload = ListHiresInputDto.parse(req.query);
             const usecase = container.resolve(ListHiresUsecase);
             const result = await usecase.execute(payload);

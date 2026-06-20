@@ -1,6 +1,9 @@
 import fastifyCookie from '@fastify/cookie';
+import fastifyMultipart from '@fastify/multipart';
+import fastifyStatic from '@fastify/static';
 import { type FastifyInstance, fastify } from 'fastify';
 import { Glob } from 'glob';
+import path from 'path';
 import { ResponseProvider } from '../provider/response.provider';
 import BaseController from './controllers/base.controller';
 
@@ -13,6 +16,11 @@ export default class HttpRegisterControllers {
         });
 
         this.app.register(fastifyCookie);
+        this.app.register(fastifyMultipart, { limits: { fileSize: 5 * 1024 * 1024 } });
+        this.app.register(fastifyStatic, {
+            root: path.join(process.cwd(), 'uploads'),
+            prefix: '/uploads/',
+        });
 
         this.app.addHook('onRequest', (request, reply, done) => {
             reply.header('Access-Control-Allow-Origin', '*');

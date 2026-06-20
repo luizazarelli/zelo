@@ -10,7 +10,8 @@ export const users = p.pgTable(
         updatedAt: p.timestamp('updated_at').defaultNow().notNull(),
         email: p.varchar().unique().notNull(),
         password: p.varchar().notNull(),
-        phone: p.varchar({length: 25}).notNull()
+        phone: p.varchar({length: 25}).notNull(),
+        profilePicture: p.varchar('profile_picture'),
     },
     (table) => [
         p.index('user_name_idx').on(table.name),
@@ -93,6 +94,14 @@ export const message = p.pgTable('message', {
     hireId: p.uuid('hire_id').references(() => hire.id, { onDelete: 'cascade' }).notNull(),
     senderId: p.uuid('sender_id').references(() => users.id, { onDelete: 'cascade' }).notNull(),
     content: p.text().notNull(),
+    createdAt: p.timestamp('created_at').defaultNow().notNull(),
+});
+
+export const workerPhotos = p.pgTable('worker_photos', {
+    id: p.uuid().defaultRandom().primaryKey(),
+    workerId: p.uuid('worker_id').references(() => worker.userId, { onDelete: 'cascade' }).notNull(),
+    url: p.varchar().notNull(),
+    position: p.integer().notNull().default(0),
     createdAt: p.timestamp('created_at').defaultNow().notNull(),
 });
 

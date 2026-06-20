@@ -1,5 +1,6 @@
 import { createServiceTypeInputDto } from "@application/use-cases/service-type/create-service-type/create-service-type.input.dto";
 import { CreateServiceTypeUseCase } from "@application/use-cases/service-type/create-service-type/create-service-type.usecase";
+import { authMiddleware } from "@presentation/http/middleware/auth.middleware";
 import { ResponseProvider } from "@presentation/provider/response.provider";
 import { FastifyInstance } from "fastify";
 import { container } from "tsyringe";
@@ -7,7 +8,7 @@ import BaseController from "../base.controller";
 
 export default class CreateServiceTypeController extends BaseController {
     register(http: FastifyInstance): void {
-        http.post('/api/v1/service-type', async (req, reply) => {
+        http.post('/api/v1/service-type', { preHandler: authMiddleware.auth }, async (req, reply) => {
             const payload = createServiceTypeInputDto.parse(req.body);
             const usecase = container.resolve(CreateServiceTypeUseCase);
             const data = await usecase.execute(payload);

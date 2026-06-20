@@ -1,7 +1,7 @@
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
-import { hireApi } from '../../api/api'
+import { hireApi, workerApi, SERVER_BASE } from '../../api/api'
 
 const norm = (s = '') => s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '')
 
@@ -16,8 +16,6 @@ const SERVICE_PHOTOS = {
 }
 
 const getServicePhoto = (name = '') => SERVICE_PHOTOS[norm(name)] || '/imgs/worker-cover.jpg'
-
-const COVER_SLIDES = ['/imgs/worker-cover.jpg', '/imgs/portfolio1.jpg', '/imgs/portfolio2.jpg', '/imgs/worker.jpg']
 
 let _psuid = 0
 const STAR_PATH = "M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"
@@ -58,6 +56,19 @@ export default function WorkerProfilePage() {
 
   const [coverIdx, setCoverIdx] = useState(0)
   const [loading, setLoading] = useState(false)
+  const [slides, setSlides] = useState(null)
+
+  useEffect(() => {
+    if (!worker?.id) return
+    workerApi.getPhotos(worker.id)
+      .then(r => {
+        const photos = r.data.data || []
+        if (photos.length > 0) {
+          setSlides(photos.map(p => `${SERVER_BASE}${p.url}`))
+        }
+      })
+      .catch(() => {})
+  }, [worker?.id])
 
   const drag = useRef({ active: false, startX: 0, deltaX: 0 })
   const [dragX, setDragX] = useState(0)
@@ -72,7 +83,7 @@ export default function WorkerProfilePage() {
   const endDrag = () => {
     if (!drag.current.active) return
     drag.current.active = false; setDragging(false)
-    if (drag.current.deltaX < -60) setCoverIdx(i => Math.min(i + 1, COVER_SLIDES.length - 1))
+    if (drag.current.deltaX < -60) setCoverIdx(i => Math.min(i + 1, activeSlides.length - 1))
     else if (drag.current.deltaX > 60) setCoverIdx(i => Math.max(i - 1, 0))
     setDragX(0)
   }
@@ -106,8 +117,10 @@ export default function WorkerProfilePage() {
     ? `${new Date().getFullYear() - new Date(worker.workingSince).getFullYear()} anos de experiência`
     : '5 anos de experiência'
 
-  const profPhoto = getServicePhoto(worker.serviceTypes?.[0])
-  const slides = [profPhoto, '/imgs/portfolio1.jpg', '/imgs/portfolio2.jpg']
+  const profPhoto = worker.profilePicture
+    ? `${SERVER_BASE}${worker.profilePicture}`
+    : getServicePhoto(worker.serviceTypes?.[0])
+  const activeSlides = slides ?? [profPhoto, '/imgs/portfolio1.jpg', '/imgs/portfolio2.jpg']
 
   return (
     <div style={s.page}>
@@ -127,7 +140,7 @@ export default function WorkerProfilePage() {
           transform: `translateX(calc(-${coverIdx * 100}% + ${dragX}px))`,
           transition: dragging ? 'none' : 'transform 0.4s ease',
         }}>
-          {slides.map((src, i) => (
+          {activeSlides.map((src, i) => (
             <div key={i} style={s.coverSlide}>
               <img src={src} style={s.coverImg} alt="" draggable={false} />
               <div style={s.coverOverlay} />
@@ -137,7 +150,7 @@ export default function WorkerProfilePage() {
 
         <button style={s.back} onClick={() => navigate(-1)}>‹</button>
         <div style={s.dots}>
-          {slides.map((_, i) => (
+          {activeSlides.map((_, i) => (
             <span
               key={i}
               style={{ ...s.dot, ...(i === coverIdx ? s.dotActive : {}) }}
@@ -171,9 +184,16 @@ export default function WorkerProfilePage() {
           </div>
         ))}
 
-        <p style={s.secTitle}>Portfólio do profissional</p>
-        <div style={s.portfolioImg}><img src="/imgs/portfolio1.jpg" style={s.portfolioImgEl} alt="" /></div>
-        <div style={s.portfolioImg}><img src="/imgs/portfolio2.jpg" style={s.portfolioImgEl} alt="" /></div>
+        {activeSlides.length > 1 && (
+          <>
+            <p style={s.secTitle}>Portfólio do profissional</p>
+            {activeSlides.slice(1).map((src, i) => (
+              <div key={i} style={s.portfolioImg}>
+                <img src={src} style={s.portfolioImgEl} alt="" />
+              </div>
+            ))}
+          </>
+        )}
       </div>
       <div style={{ height: 80 }} />
     </div>

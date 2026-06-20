@@ -1,6 +1,6 @@
 import axios from 'axios'
 
-const api = axios.create({ baseURL: 'http://localhost:8000/api/v1' })
+const api = axios.create({ baseURL: 'http://localhost:8000/api/v1', paramsSerializer: { indexes: null } })
 
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem('token')
@@ -13,8 +13,12 @@ export const authApi = {
   signIn: (data) => api.post('/auth/sign-in', data),
 }
 
+export const SERVER_BASE = 'http://localhost:8000'
+
 export const userApi = {
   update: (userId, data) => api.patch(`/user/${userId}`, data),
+  uploadPhoto: (userId, formData) =>
+    api.post(`/user/${userId}/photo`, formData, { headers: { 'Content-Type': 'multipart/form-data' } }),
 }
 
 export const serviceTypeApi = {
@@ -23,6 +27,10 @@ export const serviceTypeApi = {
 
 export const workerApi = {
   search: (serviceTypes) => api.get('/worker', { params: serviceTypes ? { serviceTypes } : {} }),
+  getPhotos: (workerId) => api.get(`/worker/${workerId}/photo`),
+  uploadPhoto: (workerId, formData) =>
+    api.post(`/worker/${workerId}/photo`, formData, { headers: { 'Content-Type': 'multipart/form-data' } }),
+  deletePhoto: (workerId, photoId) => api.delete(`/worker/${workerId}/photo/${photoId}`),
 }
 
 export const hireApi = {

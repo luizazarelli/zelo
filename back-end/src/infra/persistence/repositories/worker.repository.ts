@@ -87,8 +87,8 @@ export class WorkerRepositoryImpl implements IWorkerRepository {
 		const result = await db.query.worker.findMany({
 			where: serviceTypeIds.length > 0
 				? {
-						RAW: inArray(
-							worker.userId,
+						RAW: (table) => inArray(
+							table.userId,
 							db
 								.select({ workerId: workerServiceType.workerId })
 								.from(workerServiceType)

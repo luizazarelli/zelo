@@ -3,6 +3,7 @@ import {
 	searchWorkersInputDto,
 } from "@application/use-cases/worker/search-workers/search-workers.input.dto";
 import { SearchWorkersUseCase } from "@application/use-cases/worker/search-workers/search-workers.usecase";
+import { authMiddleware } from "@presentation/http/middleware/auth.middleware";
 import { ResponseProvider } from "@presentation/provider/response.provider";
 import type { FastifyInstance, FastifyRequest } from "fastify";
 import { container } from "tsyringe";
@@ -12,6 +13,7 @@ export default class SearchWorkersController extends BaseController {
 	register(http: FastifyInstance): void {
 		http.get(
 			"/api/v1/worker",
+			{ preHandler: authMiddleware.auth },
 			async (
 				req: FastifyRequest<{ Querystring: SearchWorkersInputDto }>,
 				reply,
