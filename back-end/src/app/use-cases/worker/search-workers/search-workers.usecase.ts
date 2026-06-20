@@ -28,15 +28,19 @@ export class SearchWorkersUseCase
 
 		const userIds = workers.map((w) => w.props.userId);
 		const users = await this.userRepository.searchByIds(userIds);
-		const nameById = new Map(users.map((u) => [u.props.id, u.props.name]));
+		const userById = new Map(users.map((u) => [u.props.id, u.props]));
 
 		return {
-			workers: workers.map((worker) => ({
-				id: worker.props.userId,
-				name: nameById.get(worker.props.userId) ?? "",
-				workingSince: worker.props.workingSince,
-				serviceTypes: worker.getServiceTypes().map((st) => st.props.name),
-			})),
+			workers: workers.map((worker) => {
+				const user = userById.get(worker.props.userId);
+				return {
+					id: worker.props.userId,
+					name: user?.name ?? "",
+					workingSince: worker.props.workingSince,
+					serviceTypes: worker.getServiceTypes().map((st) => st.props.name),
+					profilePicture: user?.profilePicture ?? null,
+				};
+			}),
 		};
 	}
 }

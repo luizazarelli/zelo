@@ -3,6 +3,7 @@ import {
 	removeWorkerServiceTypeInputDto,
 } from "@application/use-cases/worker/remove-worker-service-type/remove-worker-service-type.input.dto";
 import { RemoveWorkerServiceTypeUseCase } from "@application/use-cases/worker/remove-worker-service-type/remove-worker-service-type.usecase";
+import { authMiddleware } from "@presentation/http/middleware/auth.middleware";
 import { ResponseProvider } from "@presentation/provider/response.provider";
 import type { FastifyInstance, FastifyRequest } from "fastify";
 import { container } from "tsyringe";
@@ -12,6 +13,7 @@ export default class RemoveWorkerServiceTypeController extends BaseController {
 	register(http: FastifyInstance): void {
 		http.delete(
 			"/api/v1/worker/:workerId/service-type/:serviceTypeId",
+			{ preHandler: authMiddleware.auth },
 			async (
 				req: FastifyRequest<{ Params: RemoveWorkerServiceTypeInputDto }>,
 				reply,

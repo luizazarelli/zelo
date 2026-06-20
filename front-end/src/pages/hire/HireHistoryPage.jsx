@@ -25,15 +25,9 @@ export default function HireHistoryPage() {
   const [hires, setHires] = useState([])
 
   useEffect(() => {
-    const local = JSON.parse(localStorage.getItem('zelo_hires') || '[]')
     hireApi.previous(user.id, 'client')
-      .then(r => {
-        const api = r.data.data?.hires || []
-        const apiIds = new Set(api.map(h => h.id))
-        const extras = local.filter(h => !apiIds.has(h.id))
-        setHires([...api, ...extras])
-      })
-      .catch(() => setHires(local))
+      .then(r => setHires(r.data.data?.hires || []))
+      .catch(() => setHires([]))
   }, [])
 
   const fmt = (d) => {

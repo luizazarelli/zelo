@@ -5,14 +5,6 @@ import { useAuth } from '../../context/AuthContext'
 
 const norm = (s = '') => s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '')
 
-const DEMO_SERVICE_TYPES = [
-  { id: 'st1', name: 'Elétrica' },
-  { id: 'st2', name: 'Pintura' },
-  { id: 'st3', name: 'Construção' },
-  { id: 'st4', name: 'Encanamento' },
-  { id: 'st5', name: 'Jardinagem' },
-  { id: 'st6', name: 'Marcenaria' },
-]
 
 const BANNER_SLIDES = [
   { src: '/imgs/banner.jpg',    title: 'CONTRATE COM\nCONFIANÇA' },
@@ -45,19 +37,8 @@ export default function HomePage() {
 
   useEffect(() => {
     serviceTypeApi.list()
-      .then(r => {
-        const sts = r.data.data?.serviceTypes || []
-        const seen = new Set()
-        const unique = sts.filter(s => {
-          const k = norm(s.name)
-          if (seen.has(k) || k === 'eletricista') return false
-          seen.add(k); return true
-        })
-        const extras = DEMO_SERVICE_TYPES.filter(d => !seen.has(norm(d.name)))
-        setServiceTypes([...unique, ...extras])
-      })
-      .catch(() => setServiceTypes(DEMO_SERVICE_TYPES))
-
+      .then(r => setServiceTypes(r.data.data?.serviceTypes || []))
+      .catch(() => setServiceTypes([]))
   }, [])
 
   useEffect(() => {

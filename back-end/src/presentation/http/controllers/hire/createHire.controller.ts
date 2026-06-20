@@ -1,5 +1,6 @@
 import { CreateHireInputDto } from '@application/use-cases/hire/create-hire/create-hire.input.dto';
 import { CreateHireUsecase } from '@application/use-cases/hire/create-hire/create-hire.usecase';
+import { authMiddleware } from '@presentation/http/middleware/auth.middleware';
 import { ResponseProvider } from '@presentation/provider/response.provider';
 import type { FastifyInstance } from 'fastify';
 import { container } from 'tsyringe';
@@ -7,7 +8,7 @@ import BaseController from '../base.controller';
 
 export default class CreateHireController extends BaseController {
     register(http: FastifyInstance): void {
-        http.post('/api/v1/hire', async (request, reply) => {
+        http.post('/api/v1/hire', { preHandler: authMiddleware.auth }, async (request, reply) => {
             const payload = CreateHireInputDto.parse(request.body);
             const usecase = container.resolve(CreateHireUsecase);
             const result = await usecase.execute(payload);

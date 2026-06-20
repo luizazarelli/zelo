@@ -1,5 +1,6 @@
 import { UpdateHireStatusInputDto } from '@application/use-cases/hire/update-hire-status/update-hire-status.input.dto';
 import { UpdateHireStatusUsecase } from '@application/use-cases/hire/update-hire-status/update-hire-status.usecase';
+import { authMiddleware } from '@presentation/http/middleware/auth.middleware';
 import { ResponseProvider } from '@presentation/provider/response.provider';
 import type { FastifyInstance } from 'fastify';
 import { container } from 'tsyringe';
@@ -7,7 +8,7 @@ import BaseController from '../base.controller';
 
 export default class UpdateHireStatusController extends BaseController {
     register(http: FastifyInstance): void {
-        http.patch('/api/v1/hire/:hireId/status', async (request, reply) => {
+        http.patch('/api/v1/hire/:hireId/status', { preHandler: authMiddleware.auth }, async (request, reply) => {
             const { hireId } = request.params as { hireId: string };
             const payload = UpdateHireStatusInputDto.parse({ hireId, ...(request.body as object) });
             const usecase = container.resolve(UpdateHireStatusUsecase);

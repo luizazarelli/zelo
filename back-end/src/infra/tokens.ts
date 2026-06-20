@@ -6,6 +6,7 @@ import { PaymentRepositoryImpl } from './persistence/repositories/payment.reposi
 import { RefreshTokenImpl } from './persistence/repositories/refreshToken.repository';
 import { ServiceTypeRepositoryImpl } from './persistence/repositories/serviceType.repository';
 import UserRepositoryImpl from './persistence/repositories/user.repository';
+import { WorkerPhotoRepositoryImpl } from './persistence/repositories/workerPhoto.repository';
 import { WorkerRepositoryImpl } from './persistence/repositories/worker.repository';
 import { JwtProviderImpl } from './providers/jwt.provider';
 
@@ -14,6 +15,7 @@ export const INFRA = {
         USER: UserRepositoryImpl,
         REFRESH_TOKEN: RefreshTokenImpl,
         WORKER: WorkerRepositoryImpl,
+        WORKER_PHOTO: WorkerPhotoRepositoryImpl,
         SERVICE_TYPE: ServiceTypeRepositoryImpl,
         HIRE: HireRepositoryImpl,
         MESSAGE: MessageRepositoryImpl,

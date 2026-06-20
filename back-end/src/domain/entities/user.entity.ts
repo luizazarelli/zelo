@@ -8,6 +8,7 @@ interface IUserEntityProps {
     email: string;
     password: string;
     phone: string;
+    profilePicture?: string | null;
 }
 type CreateUserProps = Omit<IUserEntityProps, 'id' | 'createdAt' | 'updatedAt'>;
 
@@ -27,6 +28,10 @@ export default class UserEntity {
 
     static restore(props: IUserEntityProps): UserEntity {
         return new UserEntity(props);
+    }
+
+    updateProfilePicture(url: string): void {
+        this._props.profilePicture = url;
     }
 
     get props(): Readonly<IUserEntityProps> {

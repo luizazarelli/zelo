@@ -10,7 +10,8 @@ export function AuthProvider({ children }) {
     const token = localStorage.getItem('token')
     const id = localStorage.getItem('userId')
     const name = localStorage.getItem('userName')
-    if (token && id) setUser({ token, id, name })
+    const profilePicture = localStorage.getItem('userProfilePicture') || null
+    if (token && id) setUser({ token, id, name, profilePicture })
     setLoading(false)
   }, [])
 
@@ -18,7 +19,12 @@ export function AuthProvider({ children }) {
     localStorage.setItem('token', token)
     localStorage.setItem('userId', id)
     localStorage.setItem('userName', name)
-    setUser({ token, id, name })
+    setUser({ token, id, name, profilePicture: null })
+  }
+
+  const updateProfilePicture = (url) => {
+    localStorage.setItem('userProfilePicture', url)
+    setUser((prev) => prev ? { ...prev, profilePicture: url } : prev)
   }
 
   const signOut = () => {
@@ -29,7 +35,7 @@ export function AuthProvider({ children }) {
   if (loading) return null
 
   return (
-    <AuthContext.Provider value={{ user, signIn, signOut }}>
+    <AuthContext.Provider value={{ user, signIn, signOut, updateProfilePicture }}>
       {children}
     </AuthContext.Provider>
   )
