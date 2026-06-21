@@ -11,15 +11,17 @@ export function AuthProvider({ children }) {
     const id = localStorage.getItem('userId')
     const name = localStorage.getItem('userName')
     const profilePicture = localStorage.getItem('userProfilePicture') || null
-    if (token && id) setUser({ token, id, name, profilePicture })
+    const isWorker = localStorage.getItem('userIsWorker') === 'true'
+    if (token && id) setUser({ token, id, name, profilePicture, isWorker })
     setLoading(false)
   }, [])
 
-  const signIn = (token, id, name) => {
+  const signIn = (token, id, name, isWorker = false) => {
     localStorage.setItem('token', token)
     localStorage.setItem('userId', id)
     localStorage.setItem('userName', name)
-    setUser({ token, id, name, profilePicture: null })
+    localStorage.setItem('userIsWorker', String(isWorker))
+    setUser({ token, id, name, profilePicture: null, isWorker })
   }
 
   const updateProfilePicture = (url) => {

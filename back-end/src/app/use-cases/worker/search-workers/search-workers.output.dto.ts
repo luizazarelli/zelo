@@ -4,6 +4,7 @@ export interface SearchWorkersOutputDto {
 		name: string;
 		workingSince: Date;
 		serviceTypes: string[];
+		serviceTypeIds: string[];
 		profilePicture: string | null;
 	}[];
 }

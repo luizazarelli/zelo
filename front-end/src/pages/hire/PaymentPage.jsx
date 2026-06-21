@@ -182,7 +182,10 @@ const METHODS = [
 
 export default function PaymentPage() {
   const { state } = useLocation()
-  const { hire, worker } = state || {}
+  const { hire, worker, agreedAmount } = state || {}
+  const fmtAmount = agreedAmount
+    ? Number(agreedAmount).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+    : '0,00'
   const navigate = useNavigate()
 
   const [selected, setSelected] = useState('pix')
@@ -220,7 +223,7 @@ export default function PaymentPage() {
     }
     const existing = JSON.parse(localStorage.getItem('zelo_hires') || '[]')
     localStorage.setItem('zelo_hires', JSON.stringify([entry, ...existing.filter(h => h.id !== entry.id)]))
-    try { await paymentApi.process(hire?.id, 75.99) } catch {}
+    try { await paymentApi.process(hire?.id, agreedAmount || 0) } catch {}
     setLoading(false)
     setSuccess(true)
     setTimeout(() => navigate('/'), 2400)
@@ -285,11 +288,9 @@ export default function PaymentPage() {
           <p style={s.detailGray}>Data de agendamento</p>
         </div>
         <p style={s.summaryTitle}>Resumo dos valores</p>
-        <div style={s.summaryRow}><span>Subtotal</span><span>R$ 70,00</span></div>
-        <div style={s.summaryRow}><span>Taxa de serviço</span><span>R$ 5,99</span></div>
         <div style={s.totalRow}>
-          <span style={s.totalLabel}>Total a pagar</span>
-          <span style={s.totalLabel}>R$ 75,99</span>
+          <span style={s.totalLabel}>Total acordado</span>
+          <span style={s.totalLabel}>R$ {fmtAmount}</span>
         </div>
       </div>
 
@@ -375,7 +376,7 @@ export default function PaymentPage() {
       </div>
 
       <button style={{ ...s.payBtn, ...(loading ? s.payBtnDisabled : {}) }} onClick={handlePay} disabled={loading}>
-        {loading ? 'Processando...' : 'Confirmar pagamento · R$ 75,99'}
+        {loading ? 'Processando...' : `Confirmar pagamento · R$ ${fmtAmount}`}
       </button>
 
       <div style={{ height: 40 }} />

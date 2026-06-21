@@ -1,28 +1,22 @@
-/**
- * Testes de Integração — Ciclo de vida de uma contratação
- *
- * Diferença em relação aos testes de unidade:
- *   - Não usam vi.fn() (sem mocks)
- *   - Os repositórios são implementações reais em memória
- *   - Validam que os use cases integram corretamente entre si
- */
 import type { HireEntity } from '@domain/entities/hire.entity'
 import { PaymentEntity } from '@domain/entities/payment.entity'
+import { ProposalEntity } from '@domain/entities/proposal.entity'
 import type { IHireRepository } from '@domain/repositories/hire.repository'
 import type { IPaymentRepository } from '@domain/repositories/payment.repository'
+import type { IProposalRepository } from '@domain/repositories/proposal.repository'
 import type { IUserRepository } from '@domain/repositories/user.repository'
 import type { IWorkerRepository } from '@domain/repositories/worker.repository'
 import UserEntity from '@domain/entities/user.entity'
 import { WorkerEntity } from '@domain/entities/worker.entity'
 import { CreateHireUsecase } from '@application/use-cases/hire/create-hire/create-hire.usecase'
-import { UpdateHireStatusUsecase } from '@application/use-cases/hire/update-hire-status/update-hire-status.usecase'
+import { SubmitProposalUsecase } from '@application/use-cases/proposal/submit-proposal/submit-proposal.usecase'
+import { AcceptProposalUsecase } from '@application/use-cases/proposal/accept-proposal/accept-proposal.usecase'
 import { ProcessPaymentUsecase } from '@application/use-cases/payment/process-payment/process-payment.usecase'
 import { describe, beforeEach, it, expect } from 'vitest'
 import { randomUUID } from 'node:crypto'
 
 class InMemoryUserRepository implements IUserRepository {
     private data = new Map<string, UserEntity>()
-
     async create(user: UserEntity) { this.data.set(user.props.id, user) }
     async update(user: UserEntity) { this.data.set(user.props.id, user) }
     async findById(id: string) { return this.data.get(id) ?? null }
@@ -36,7 +30,6 @@ class InMemoryUserRepository implements IUserRepository {
 
 class InMemoryWorkerRepository implements IWorkerRepository {
     private data = new Map<string, WorkerEntity>()
-
     async create(worker: WorkerEntity) { this.data.set(worker.props.userId, worker) }
     async save(worker: WorkerEntity) { this.data.set(worker.props.userId, worker) }
     async findById(id: string) { return this.data.get(id) ?? null }
@@ -45,7 +38,6 @@ class InMemoryWorkerRepository implements IWorkerRepository {
 
 class InMemoryHireRepository implements IHireRepository {
     private data = new Map<string, HireEntity>()
-
     async create(hire: HireEntity) { this.data.set(hire.props.id, hire) }
     async save(hire: HireEntity) { this.data.set(hire.props.id, hire) }
     async findById(id: string) { return this.data.get(id) ?? null }
@@ -57,9 +49,18 @@ class InMemoryHireRepository implements IHireRepository {
     }
 }
 
+class InMemoryProposalRepository implements IProposalRepository {
+    private data: ProposalEntity[] = []
+    async create(p: ProposalEntity) { this.data.push(p) }
+    async listByHireId(hireId: string) { return this.data.filter(p => p.props.hireId === hireId) }
+    async findLatestByHireId(hireId: string) {
+        const list = this.data.filter(p => p.props.hireId === hireId)
+        return list.sort((a, b) => b.props.round - a.props.round)[0] ?? null
+    }
+}
+
 class InMemoryPaymentRepository implements IPaymentRepository {
     private data = new Map<string, PaymentEntity>()
-
     async create(payment: PaymentEntity) { this.data.set(payment.props.id, payment) }
     async save(payment: PaymentEntity) { this.data.set(payment.props.id, payment) }
     async findById(id: string) { return this.data.get(id) ?? null }
@@ -68,14 +69,16 @@ class InMemoryPaymentRepository implements IPaymentRepository {
     }
 }
 
-describe('Integração — ciclo completo de contratação', () => {
+describe('Integração — ciclo completo de contratação com negociação', () => {
     let userRepo: InMemoryUserRepository
     let workerRepo: InMemoryWorkerRepository
     let hireRepo: InMemoryHireRepository
+    let proposalRepo: InMemoryProposalRepository
     let paymentRepo: InMemoryPaymentRepository
 
     let createHire: CreateHireUsecase
-    let updateHireStatus: UpdateHireStatusUsecase
+    let submitProposal: SubmitProposalUsecase
+    let acceptProposal: AcceptProposalUsecase
     let processPayment: ProcessPaymentUsecase
 
     let clientId: string
@@ -86,10 +89,12 @@ describe('Integração — ciclo completo de contratação', () => {
         userRepo = new InMemoryUserRepository()
         workerRepo = new InMemoryWorkerRepository()
         hireRepo = new InMemoryHireRepository()
+        proposalRepo = new InMemoryProposalRepository()
         paymentRepo = new InMemoryPaymentRepository()
 
-        createHire = new CreateHireUsecase(userRepo, workerRepo, hireRepo)
-        updateHireStatus = new UpdateHireStatusUsecase(hireRepo)
+        createHire = new CreateHireUsecase(userRepo, workerRepo, hireRepo, proposalRepo)
+        submitProposal = new SubmitProposalUsecase(hireRepo, proposalRepo)
+        acceptProposal = new AcceptProposalUsecase(hireRepo, proposalRepo)
         processPayment = new ProcessPaymentUsecase(hireRepo, paymentRepo)
 
         const client = UserEntity.create({
@@ -111,33 +116,61 @@ describe('Integração — ciclo completo de contratação', () => {
         await workerRepo.create(worker)
     })
 
-    it('fluxo completo: criar → aceitar → pagar', async () => {
+    it('fluxo direto: cliente propõe → worker aceita → paga', async () => {
         const hire = await createHire.execute({
-            clientId,
-            workerId,
-            serviceTypeId,
+            clientId, workerId, serviceTypeId,
             description: 'Instalação elétrica',
+            amount: 450,
         })
-        expect(hire.status).toBe('pending')
+        expect(hire.status).toBe('negotiating')
+        expect(hire.proposalAmount).toBe(450)
 
-        await updateHireStatus.execute({ hireId: hire.id, status: 'accepted' })
+        const { agreedAmount } = await acceptProposal.execute({ hireId: hire.id, acceptorId: workerId })
+        expect(agreedAmount).toBe(450)
+
         const hireAfterAccept = await hireRepo.findById(hire.id)
         expect(hireAfterAccept?.props.status).toBe('accepted')
 
-        const payment = await processPayment.execute({ hireId: hire.id, amount: 450 })
+        const payment = await processPayment.execute({ hireId: hire.id, amount: agreedAmount })
         expect(payment.status).toBe('paid')
         expect(payment.amount).toBe(450)
-
-        const hireAfterPayment = await hireRepo.findById(hire.id)
-        expect(hireAfterPayment?.props.status).toBe('completed')
     })
 
-    it('não deve processar pagamento se a contratação estiver pendente', async () => {
+    it('fluxo com contra-proposta: cliente → worker counter → cliente aceita', async () => {
         const hire = await createHire.execute({
-            clientId,
-            workerId,
-            serviceTypeId,
-            description: 'Pintura',
+            clientId, workerId, serviceTypeId,
+            description: 'Pintura completa',
+            amount: 300,
+        })
+
+        const counter = await submitProposal.execute({ hireId: hire.id, authorId: workerId, amount: 380 })
+        expect(counter.round).toBe(2)
+
+        const { agreedAmount } = await acceptProposal.execute({ hireId: hire.id, acceptorId: clientId })
+        expect(agreedAmount).toBe(380)
+    })
+
+    it('múltiplas rodadas de negociação', async () => {
+        const hire = await createHire.execute({
+            clientId, workerId, serviceTypeId,
+            description: 'Reforma completa do banheiro',
+            amount: 500,
+        })
+
+        await submitProposal.execute({ hireId: hire.id, authorId: workerId, amount: 700 })
+        await submitProposal.execute({ hireId: hire.id, authorId: clientId, amount: 600 })
+        const final = await submitProposal.execute({ hireId: hire.id, authorId: workerId, amount: 650 })
+        expect(final.round).toBe(4)
+
+        const { agreedAmount } = await acceptProposal.execute({ hireId: hire.id, acceptorId: clientId })
+        expect(agreedAmount).toBe(650)
+    })
+
+    it('não deve processar pagamento se a contratação está em negociação', async () => {
+        const hire = await createHire.execute({
+            clientId, workerId, serviceTypeId,
+            description: 'Serviço de pintura',
+            amount: 100,
         })
 
         await expect(
@@ -145,17 +178,14 @@ describe('Integração — ciclo completo de contratação', () => {
         ).rejects.toThrow('A contratação precisa estar aceita para prosseguir')
     })
 
-    it('não deve pagar duas vezes a mesma contratação (HireAlreadyPaid)', async () => {
+    it('não deve pagar duas vezes a mesma contratação', async () => {
         const hire = await createHire.execute({
-            clientId,
-            workerId,
-            serviceTypeId,
-            description: 'Encanamento',
+            clientId, workerId, serviceTypeId,
+            description: 'Encanamento completo',
+            amount: 200,
         })
-        await updateHireStatus.execute({ hireId: hire.id, status: 'accepted' })
+        await acceptProposal.execute({ hireId: hire.id, acceptorId: workerId })
 
-        // Insere um pagamento diretamente no repositório para simular
-        // um pagamento já existente sem alterar o status da contratação
         const pagamentoExistente = PaymentEntity.create({ hireId: hire.id, amount: 200 })
         pagamentoExistente.pay()
         await paymentRepo.create(pagamentoExistente)

@@ -1,8 +1,8 @@
-import z from 'zod';
+import z from 'zod'
 
 export const UpdateHireStatusInputDto = z.object({
     hireId: z.uuid('ID da contratação inválido'),
-    status: z.enum(['accepted', 'completed', 'cancelled']),
-});
+    status: z.enum(['completed', 'cancelled']),
+})
 
-export type UpdateHireStatusInputDto = z.infer<typeof UpdateHireStatusInputDto>;
+export type UpdateHireStatusInputDto = z.infer<typeof UpdateHireStatusInputDto>

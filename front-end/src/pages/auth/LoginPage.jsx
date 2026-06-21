@@ -20,7 +20,7 @@ export default function LoginPage() {
       const token = data.data.token
       const base64 = token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/')
       const payload = JSON.parse(decodeURIComponent(escape(atob(base64))))
-      signIn(token, payload.id, payload.name)
+      signIn(token, payload.id, payload.name, payload.isWorker ?? false)
       navigate('/')
     } catch {
       setError('Email ou senha inválidos')

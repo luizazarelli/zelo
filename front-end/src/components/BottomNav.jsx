@@ -1,7 +1,8 @@
 import { useNavigate, useLocation } from 'react-router-dom'
+import { useAuth } from '../context/AuthContext'
 
-const tabs = [
-  { path: '/', label: 'Início', icon: (active) => (
+const ALL_TABS = [
+  { path: '/', label: 'Início', workerOnly: false, clientOnly: true, icon: (active) => (
     <svg width="24" height="24" viewBox="0 0 24 24" fill={active ? '#fff' : 'rgba(255,255,255,0.55)'}>
       <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
     </svg>
@@ -21,6 +22,8 @@ const tabs = [
 export default function BottomNav() {
   const navigate = useNavigate()
   const { pathname } = useLocation()
+  const { user } = useAuth()
+  const tabs = ALL_TABS.filter(t => !t.clientOnly || !user?.isWorker)
 
   return (
     <nav style={s.nav}>

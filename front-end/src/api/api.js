@@ -38,6 +38,9 @@ export const hireApi = {
   list: (userId, role, status) => api.get('/hire', { params: { userId, role, ...(status && { status }) } }),
   previous: (userId, role) => api.get('/hire/previous', { params: { userId, role } }),
   updateStatus: (hireId, status) => api.patch(`/hire/${hireId}/status`, { status }),
+  submitProposal: (hireId, data) => api.post(`/hire/${hireId}/proposal`, data),
+  acceptProposal: (hireId, data) => api.patch(`/hire/${hireId}/proposal/accept`, data),
+  getProposals: (hireId) => api.get(`/hire/${hireId}/proposal`),
 }
 
 export const messageApi = {

@@ -5,6 +5,7 @@ import { Config } from "@common/env.config";
 import type { IJwtProvider } from "@domain/providers/jwt.provider";
 import type { IRefreshTokenRepository } from "@domain/repositories/refreshToken.repository";
 import type { IUserRepository } from "@domain/repositories/user.repository";
+import type { IWorkerRepository } from "@domain/repositories/worker.repository";
 import { INFRA } from "@infra/tokens";
 import type IJwtPayload from "src/@types/JwtPayload";
 import { inject, injectable } from "tsyringe";
@@ -26,6 +27,8 @@ export class RenewAuthTokenUseCase
 		private readonly jwtProvider: IJwtProvider<IJwtPayload>,
 		@inject(INFRA.REPOSITORIES.USER)
 		private readonly userRepository: IUserRepository,
+		@inject(INFRA.REPOSITORIES.WORKER)
+		private readonly workerRepository: IWorkerRepository,
 	) {}
 
 	async execute({
@@ -54,8 +57,10 @@ export class RenewAuthTokenUseCase
 		refreshToken.revoke();
 		await this.refreshTokenRepository.save(refreshToken);
 
+		const workerEntity = await this.workerRepository.findById(user.props.id);
+
 		const jwt = this.jwtProvider.sign(
-			{ id: user.props.id, name: user.props.name },
+			{ id: user.props.id, name: user.props.name, isWorker: !!workerEntity },
 			Config.env.JWT_SECRET,
 		);
 

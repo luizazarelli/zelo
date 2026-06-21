@@ -6,12 +6,14 @@ import { RefreshTokenEntity } from '@domain/entities/refreshToken.entity';
 import type { IJwtProvider } from '@domain/providers/jwt.provider';
 import type { IRefreshTokenRepository } from '@domain/repositories/refreshToken.repository';
 import type { IUserRepository } from '@domain/repositories/user.repository';
+import type { IWorkerRepository } from '@domain/repositories/worker.repository';
 import type IJwtPayload from 'src/@types/JwtPayload';
 import { mockRefreshTokenEntity } from '@test/mocks/entities/refreshToken.entity.mock';
 import { mockUserEntity } from '@test/mocks/entities/user.entity.mock';
 import { mockJwtProvider } from '@test/mocks/providers/jwt.provider';
 import { mockRefreshTokenRepository } from '@test/mocks/repositories/refreshToken.repository.mock';
 import { mockUserRepository } from '@test/mocks/repositories/user.repository.mock';
+import { mockWorkerRepository } from '@test/mocks/repositories/worker.repository.mock';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 describe('RenewAuthTokenUseCase - testes de unidade', () => {
@@ -19,6 +21,7 @@ describe('RenewAuthTokenUseCase - testes de unidade', () => {
     let createRefreshTokenUsecase: CreateRefreshTokenUsecase;
     let jwtProvider: IJwtProvider<IJwtPayload>;
     let userRepository: IUserRepository;
+    let workerRepository: IWorkerRepository;
     let usecase: RenewAuthTokenUseCase;
 
     beforeEach(() => {
@@ -29,11 +32,13 @@ describe('RenewAuthTokenUseCase - testes de unidade', () => {
         } as unknown as CreateRefreshTokenUsecase;
         jwtProvider = mockJwtProvider<IJwtPayload>();
         userRepository = mockUserRepository();
+        workerRepository = mockWorkerRepository();
         usecase = new RenewAuthTokenUseCase(
             refreshTokenRepository,
             createRefreshTokenUsecase,
             jwtProvider,
             userRepository,
+            workerRepository,
         );
     });
 
@@ -97,6 +102,7 @@ describe('RenewAuthTokenUseCase - testes de unidade', () => {
             oldRefreshToken,
         );
         vi.mocked(userRepository.findById).mockResolvedValue(user);
+        vi.mocked(workerRepository.findById).mockResolvedValue(null);
         vi.mocked(createRefreshTokenUsecase.execute).mockResolvedValue(
             newRefreshToken,
         );

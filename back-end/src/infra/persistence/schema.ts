@@ -114,6 +114,17 @@ export const payment = p.pgTable('payment', {
     paidAt: p.timestamp('paid_at'),
 });
 
+export const proposal = p.pgTable('proposal', {
+    id: p.uuid().defaultRandom().primaryKey(),
+    hireId: p.uuid('hire_id').references(() => hire.id, { onDelete: 'cascade' }).notNull(),
+    authorId: p.uuid('author_id').references(() => users.id, { onDelete: 'cascade' }).notNull(),
+    amount: p.doublePrecision().notNull(),
+    round: p.integer().notNull(),
+    createdAt: p.timestamp('created_at').defaultNow().notNull(),
+}, (table) => [
+    p.index('proposal_hire_id_idx').on(table.hireId),
+])
+
 export const relations = defineRelations({users, worker, workerServiceType, serviceType}, (r) => ({
     users: {
         worker: r.one.worker({
