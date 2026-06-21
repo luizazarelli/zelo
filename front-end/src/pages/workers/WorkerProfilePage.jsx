@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
-import { useAuth } from '../../context/AuthContext'
-import { hireApi, workerApi, SERVER_BASE } from '../../api/api'
+import { workerApi, SERVER_BASE } from '../../api/api'
 
 const norm = (s = '') => s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '')
 
@@ -52,10 +51,8 @@ export default function WorkerProfilePage() {
   const navigate = useNavigate()
   const { state } = useLocation()
   const { worker } = state || {}
-  const { user } = useAuth()
 
   const [coverIdx, setCoverIdx] = useState(0)
-  const [loading, setLoading] = useState(false)
   const [slides, setSlides] = useState(null)
 
   useEffect(() => {
@@ -88,23 +85,8 @@ export default function WorkerProfilePage() {
     setDragX(0)
   }
 
-  const handleHire = async () => {
-    setLoading(true)
-    try {
-      const serviceTypeId = worker.serviceTypeIds?.[0] || ''
-      const { data } = await hireApi.create({
-        clientId: user.id,
-        workerId: worker.id,
-        serviceTypeId,
-        description: 'Solicitação de orçamento via app',
-      })
-      navigate('/chat', { state: { worker, hire: data.data } })
-    } catch {
-      const mockHire = { id: `demo-${Date.now()}`, status: 'pending', workerId: worker.id }
-      navigate('/chat', { state: { worker, hire: mockHire } })
-    } finally {
-      setLoading(false)
-    }
+  const handleHire = () => {
+    navigate('/hire-request', { state: { worker } })
   }
 
   if (!worker) return (
@@ -165,8 +147,8 @@ export default function WorkerProfilePage() {
         <p style={s.years}>{years}</p>
         <StarIcons count={worker.rating ?? 4} size={13} />
 
-        <button style={s.hireBtn} onClick={handleHire} disabled={loading}>
-          {loading ? 'Aguarde...' : 'Solicitar Orçamento'}
+        <button style={s.hireBtn} onClick={handleHire}>
+          Solicitar Orçamento
         </button>
 
         <p style={s.secTitle}>Avaliações</p>

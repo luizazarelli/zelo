@@ -5,6 +5,7 @@ import { Config } from "@common/env.config";
 import type { IHashProvider } from "@domain/providers/hash.provider";
 import type { IJwtProvider } from "@domain/providers/jwt.provider";
 import type { IUserRepository } from "@domain/repositories/user.repository";
+import type { IWorkerRepository } from "@domain/repositories/worker.repository";
 import { INFRA } from "@infra/tokens";
 import type IJwtPayload from "src/@types/JwtPayload";
 import { inject, injectable } from "tsyringe";
@@ -19,6 +20,8 @@ export class SignInUsecase
 	constructor(
 		@inject(INFRA.REPOSITORIES.USER)
 		private userRepository: IUserRepository,
+		@inject(INFRA.REPOSITORIES.WORKER)
+		private workerRepository: IWorkerRepository,
 		@inject(INFRA.PROVIDERS.HASH)
 		private hashProvider: IHashProvider,
 		@inject(INFRA.PROVIDERS.JWT)
@@ -37,8 +40,10 @@ export class SignInUsecase
 		);
 		if (!correctPassword) throw new InvalidCredentials();
 
+		const workerEntity = await this.workerRepository.findById(user.props.id);
+
 		const jwt = this.jwtProvider.sign(
-			{ id: user.props.id, name: user.props.name },
+			{ id: user.props.id, name: user.props.name, isWorker: !!workerEntity },
 			Config.env.JWT_SECRET,
 		);
 

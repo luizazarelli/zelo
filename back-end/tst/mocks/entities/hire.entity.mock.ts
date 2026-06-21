@@ -1,9 +1,9 @@
 import { randomUUID } from 'node:crypto'
-import { HireEntity } from '@domain/entities/hire.entity'
+import { HireEntity, type HireStatus } from '@domain/entities/hire.entity'
 
 export function mockHireEntity(overrides?: Partial<{
     id: string
-    status: 'pending' | 'accepted' | 'completed' | 'cancelled'
+    status: HireStatus
 }>): HireEntity {
     const now = new Date()
     return HireEntity.restore({
@@ -12,7 +12,7 @@ export function mockHireEntity(overrides?: Partial<{
         workerId: randomUUID(),
         serviceTypeId: randomUUID(),
         description: 'Serviço de teste',
-        status: overrides?.status ?? 'pending',
+        status: overrides?.status ?? 'negotiating',
         createdAt: now,
         updatedAt: now,
     })

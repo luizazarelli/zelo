@@ -3,6 +3,7 @@ import { container } from 'tsyringe';
 import { HireRepositoryImpl } from './persistence/repositories/hire.repository';
 import { MessageRepositoryImpl } from './persistence/repositories/message.repository';
 import { PaymentRepositoryImpl } from './persistence/repositories/payment.repository';
+import { ProposalRepositoryImpl } from './persistence/repositories/proposal.repository';
 import { RefreshTokenImpl } from './persistence/repositories/refreshToken.repository';
 import { ServiceTypeRepositoryImpl } from './persistence/repositories/serviceType.repository';
 import UserRepositoryImpl from './persistence/repositories/user.repository';
@@ -20,6 +21,7 @@ export const INFRA = {
         HIRE: HireRepositoryImpl,
         MESSAGE: MessageRepositoryImpl,
         PAYMENT: PaymentRepositoryImpl,
+        PROPOSAL: ProposalRepositoryImpl,
     },
     PROVIDERS: {
         HASH: HashProviderImpl,

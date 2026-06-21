@@ -1,11 +1,13 @@
 import { IHashProvider } from '@domain/providers/hash.provider';
 import { IJwtProvider } from '@domain/providers/jwt.provider';
 import { IUserRepository } from '@domain/repositories/user.repository';
+import type { IWorkerRepository } from '@domain/repositories/worker.repository';
 import IJwtPayload from 'src/@types/JwtPayload';
 import { mockUserEntity } from '@test/mocks/entities/user.entity.mock';
 import { mockHashProvider } from '@test/mocks/providers/hash.provider';
 import { mockJwtProvider } from '@test/mocks/providers/jwt.provider';
 import { mockUserRepository } from '@test/mocks/repositories/user.repository.mock';
+import { mockWorkerRepository } from '@test/mocks/repositories/worker.repository.mock';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { InvalidCredentials } from '@application/use-cases/auth/_errors/invalidCredentials.error';
 import { SignInInputDTO } from '@application/use-cases/auth/sign-in/sign-in.input.dto';
@@ -14,6 +16,7 @@ import { SignInUsecase } from '@application/use-cases/auth/sign-in/sign-in.useca
 describe('SignInUsecase', () => {
     let useCase: SignInUsecase;
     let userRepository: IUserRepository;
+    let workerRepository: IWorkerRepository;
     let hashProvider: IHashProvider;
     let jwtProvider: IJwtProvider<IJwtPayload>;
     let createRefreshTokenUsecase: any;
@@ -21,11 +24,13 @@ describe('SignInUsecase', () => {
     beforeEach(() => {
         vi.clearAllMocks();
         userRepository = mockUserRepository();
+        workerRepository = mockWorkerRepository();
         hashProvider = mockHashProvider();
         jwtProvider = mockJwtProvider();
         createRefreshTokenUsecase = { execute: vi.fn() };
         useCase = new SignInUsecase(
             userRepository,
+            workerRepository,
             hashProvider,
             jwtProvider,
             createRefreshTokenUsecase

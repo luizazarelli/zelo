@@ -9,19 +9,17 @@ const makeProps = () => ({
 })
 
 describe('HireEntity — testes de unidade', () => {
-    it('deve criar uma contratação com status pending', () => {
+    it('deve criar uma contratação com status negotiating', () => {
         const hire = HireEntity.create(makeProps())
-
-        expect(hire.props.status).toBe('pending')
+        expect(hire.props.status).toBe('negotiating')
         expect(hire.props.id).toBeDefined()
         expect(hire.props.clientId).toBe('client-uuid')
         expect(hire.props.createdAt).toBeInstanceOf(Date)
     })
 
-    it('deve aceitar uma contratação (pending → accepted)', () => {
+    it('deve aceitar uma contratação (negotiating → accepted)', () => {
         const hire = HireEntity.create(makeProps())
         hire.accept()
-
         expect(hire.props.status).toBe('accepted')
     })
 
@@ -29,14 +27,12 @@ describe('HireEntity — testes de unidade', () => {
         const hire = HireEntity.create(makeProps())
         hire.accept()
         hire.complete()
-
         expect(hire.props.status).toBe('completed')
     })
 
     it('deve cancelar uma contratação', () => {
         const hire = HireEntity.create(makeProps())
         hire.cancel()
-
         expect(hire.props.status).toBe('cancelled')
     })
 
@@ -52,7 +48,6 @@ describe('HireEntity — testes de unidade', () => {
             createdAt: now,
             updatedAt: now,
         })
-
         expect(hire.props.id).toBe('hire-123')
         expect(hire.props.status).toBe('accepted')
     })

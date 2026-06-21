@@ -16,8 +16,8 @@ const SERVICE_PHOTOS = {
 
 const getPhoto = (name = '') => SERVICE_PHOTOS[norm(name)] || '/imgs/worker.jpg'
 
-const STATUS_LABEL = { paid: 'Pago', accepted: 'Aceito', pending: 'Pendente', completed: 'Concluído' }
-const STATUS_COLOR = { paid: '#38b31f', accepted: '#2196f3', pending: '#ff9800', completed: '#38b31f' }
+const STATUS_LABEL = { negotiating: 'Em negociação', accepted: 'Aceito', completed: 'Concluído', cancelled: 'Cancelado' }
+const STATUS_COLOR = { negotiating: '#ff9800', accepted: '#2196f3', completed: '#38b31f', cancelled: '#9e9e9e' }
 
 export default function HireHistoryPage() {
   const { user } = useAuth()
@@ -25,10 +25,10 @@ export default function HireHistoryPage() {
   const [hires, setHires] = useState([])
 
   useEffect(() => {
-    hireApi.previous(user.id, 'client')
+    hireApi.list(user.id, 'client')
       .then(r => setHires(r.data.data?.hires || []))
       .catch(() => setHires([]))
-  }, [])
+  }, [user.id])
 
   const fmt = (d) => {
     if (!d) return '—'
@@ -54,11 +54,11 @@ export default function HireHistoryPage() {
         )}
 
         {hires.map(h => {
-          const wName = h.worker?.name || h.workerName || 'Profissional'
-          const wType = h.worker?.serviceTypes?.[0] || h.description?.replace('Serviço de ', '') || 'Serviço'
+          const wName = h.workerName || 'Profissional'
+          const wType = h.description?.replace('Serviço de ', '') || 'Serviço'
           const photo = getPhoto(wType)
-          const status = h.status || 'pending'
-          const workerObj = h.worker || { id: h.workerId, name: wName, serviceTypes: [wType] }
+          const status = h.status || 'negotiating'
+          const workerObj = { id: h.workerId, name: wName, serviceTypes: [wType] }
           return (
             <div key={h.id} style={s.item}>
               <p style={s.date}>{fmt(h.createdAt)}</p>
@@ -81,7 +81,7 @@ export default function HireHistoryPage() {
                   <button style={s.btnGreen}>Avaliar</button>
                   <button
                     style={s.btnOutline}
-                    onClick={() => navigate('/chat', { state: { hire: h, worker: workerObj } })}
+                    onClick={() => navigate('/chat', { state: { hire: h, worker: workerObj, isWorkerView: false } })}
                   >
                     Entrar em contato
                   </button>

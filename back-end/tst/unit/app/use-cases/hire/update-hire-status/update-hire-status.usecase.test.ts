@@ -15,16 +15,6 @@ describe('UpdateHireStatusUsecase — testes de unidade', () => {
         usecase = new UpdateHireStatusUsecase(hireRepo)
     })
 
-    it('deve aceitar uma contratação pendente', async () => {
-        const hire = mockHireEntity({ status: 'pending' })
-        vi.mocked(hireRepo.findById).mockResolvedValue(hire)
-
-        await usecase.execute({ hireId: hire.props.id, status: 'accepted' })
-
-        expect(hire.props.status).toBe('accepted')
-        expect(hireRepo.save).toHaveBeenCalledWith(hire)
-    })
-
     it('deve concluir uma contratação aceita', async () => {
         const hire = mockHireEntity({ status: 'accepted' })
         vi.mocked(hireRepo.findById).mockResolvedValue(hire)
@@ -35,7 +25,7 @@ describe('UpdateHireStatusUsecase — testes de unidade', () => {
     })
 
     it('deve cancelar uma contratação', async () => {
-        const hire = mockHireEntity({ status: 'pending' })
+        const hire = mockHireEntity({ status: 'negotiating' })
         vi.mocked(hireRepo.findById).mockResolvedValue(hire)
 
         await usecase.execute({ hireId: hire.props.id, status: 'cancelled' })
@@ -47,7 +37,7 @@ describe('UpdateHireStatusUsecase — testes de unidade', () => {
         vi.mocked(hireRepo.findById).mockResolvedValue(null)
 
         await expect(
-            usecase.execute({ hireId: 'id-inexistente', status: 'accepted' })
+            usecase.execute({ hireId: 'id-inexistente', status: 'completed' })
         ).rejects.toThrow(HireNotFound)
     })
 
@@ -55,7 +45,7 @@ describe('UpdateHireStatusUsecase — testes de unidade', () => {
         const hire = mockHireEntity()
         vi.mocked(hireRepo.findById).mockResolvedValue(hire)
 
-        await usecase.execute({ hireId: hire.props.id, status: 'accepted' })
+        await usecase.execute({ hireId: hire.props.id, status: 'completed' })
 
         expect(hireRepo.save).toHaveBeenCalledOnce()
     })

@@ -7,8 +7,10 @@ import HomePage from './pages/home/HomePage'
 import WorkerListPage from './pages/workers/WorkerListPage'
 import WorkerProfilePage from './pages/workers/WorkerProfilePage'
 import ChatPage from './pages/hire/ChatPage'
+import HireRequestPage from './pages/hire/HireRequestPage'
 import PaymentPage from './pages/hire/PaymentPage'
 import HireHistoryPage from './pages/hire/HireHistoryPage'
+import WorkerHiresPage from './pages/hire/WorkerHiresPage'
 import ProfilePage from './pages/profile/ProfilePage'
 import BottomNav from './components/BottomNav'
 
@@ -28,12 +30,13 @@ function AppRoutes() {
       <Routes>
         <Route path="/login" element={user ? <Navigate to="/" /> : <LoginPage />} />
         <Route path="/register" element={user ? <Navigate to="/" /> : <RegisterPage />} />
-        <Route path="/" element={<PrivateRoute><HomePage /></PrivateRoute>} />
+        <Route path="/" element={<PrivateRoute>{user?.isWorker ? <Navigate to="/historico" /> : <HomePage />}</PrivateRoute>} />
         <Route path="/workers" element={<PrivateRoute><WorkerListPage /></PrivateRoute>} />
         <Route path="/workers/:id" element={<PrivateRoute><WorkerProfilePage /></PrivateRoute>} />
+        <Route path="/hire-request" element={<PrivateRoute><HireRequestPage /></PrivateRoute>} />
         <Route path="/chat" element={<PrivateRoute><ChatPage /></PrivateRoute>} />
         <Route path="/payment" element={<PrivateRoute><PaymentPage /></PrivateRoute>} />
-        <Route path="/historico" element={<PrivateRoute><HireHistoryPage /></PrivateRoute>} />
+        <Route path="/historico" element={<PrivateRoute>{user?.isWorker ? <WorkerHiresPage /> : <HireHistoryPage />}</PrivateRoute>} />
         <Route path="/perfil" element={<PrivateRoute><ProfilePage /></PrivateRoute>} />
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>

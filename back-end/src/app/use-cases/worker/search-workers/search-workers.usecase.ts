@@ -38,6 +38,7 @@ export class SearchWorkersUseCase
 					name: user?.name ?? "",
 					workingSince: worker.props.workingSince,
 					serviceTypes: worker.getServiceTypes().map((st) => st.props.name),
+					serviceTypeIds: worker.getServiceTypes().map((st) => st.props.id),
 					profilePicture: user?.profilePicture ?? null,
 				};
 			}),

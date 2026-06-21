@@ -53,8 +53,8 @@ describe('ProcessPaymentUsecase — testes de unidade', () => {
         ).rejects.toThrow(HireNotFound)
     })
 
-    it('deve lançar HireNotAccepted se a contratação ainda estiver pendente', async () => {
-        const hire = mockHireEntity({ status: 'pending' })
+    it('deve lançar HireNotAccepted se a contratação ainda estiver em negociação', async () => {
+        const hire = mockHireEntity({ status: 'negotiating' })
         vi.mocked(hireRepo.findById).mockResolvedValue(hire)
 
         await expect(

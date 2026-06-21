@@ -1,5 +1,6 @@
 export interface CreateHireOutputDto {
-    id: string;
-    status: string;
-    createdAt: Date;
+    id: string
+    status: string
+    createdAt: Date
+    proposalAmount: number
 }
