@@ -3,18 +3,13 @@ import { useNavigate } from 'react-router-dom'
 import { hireApi } from '../../api/api'
 import { useAuth } from '../../context/AuthContext'
 
-const norm = (s = '') => s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '')
 
-const SERVICE_PHOTOS = {
-  eletrica:    '/imgs/worker.jpg',
-  pintura:     '/imgs/pintura.jpg',
-  construcao:  '/imgs/construcao.jpg',
-  encanamento: '/imgs/worker-cover.jpg',
-  jardinagem:  '/imgs/banner.jpg',
-  marcenaria:  '/imgs/construcao.jpg',
+const extractStr = (raw, fallback) => {
+  if (typeof raw === 'string') return raw || fallback
+  if (raw?._props?.name) return raw._props.name
+  if (typeof raw?.name === 'string') return raw.name || fallback
+  return fallback
 }
-
-const getPhoto = (name = '') => SERVICE_PHOTOS[norm(name)] || '/imgs/worker.jpg'
 
 const STATUS_LABEL = { negotiating: 'Em negociação', accepted: 'Aceito', completed: 'Concluído', cancelled: 'Cancelado' }
 const STATUS_COLOR = { negotiating: '#ff9800', accepted: '#2196f3', completed: '#38b31f', cancelled: '#9e9e9e' }
@@ -54,9 +49,8 @@ export default function HireHistoryPage() {
         )}
 
         {hires.map(h => {
-          const wName = h.workerName || 'Profissional'
-          const wType = h.description?.replace('Serviço de ', '') || 'Serviço'
-          const photo = getPhoto(wType)
+          const wName = extractStr(h.workerName, 'Profissional')
+          const wType = typeof h.description === 'string' ? (h.description.replace('Serviço de ', '') || 'Serviço') : 'Serviço'
           const status = h.status || 'negotiating'
           const workerObj = { id: h.workerId, name: wName, serviceTypes: [wType] }
           return (
@@ -65,7 +59,7 @@ export default function HireHistoryPage() {
               <div style={s.card}>
                 <div style={s.cardTop}>
                   <div style={s.avatar}>
-                    <img src={photo} style={s.avatarImg} alt="" />
+                    <span style={s.avatarLetter}>{String(wName).charAt(0).toUpperCase()}</span>
                   </div>
                   <div style={s.cardInfo}>
                     <p style={s.wName}>{wName}</p>
@@ -76,7 +70,7 @@ export default function HireHistoryPage() {
                   </span>
                 </div>
                 <div style={s.divider} />
-                <p style={s.desc}>{h.description || 'Solicitação de orçamento'}</p>
+                <p style={s.desc}>{typeof h.description === 'string' ? h.description : 'Solicitação de orçamento'}</p>
                 <div style={s.actions}>
                   <button style={s.btnGreen}>Avaliar</button>
                   <button
@@ -116,17 +110,20 @@ const s = {
     boxShadow: '0 1px 4px rgba(0,0,0,0.06)',
   },
   cardTop: { display: 'flex', alignItems: 'center', gap: 10 },
-  avatar: { width: 42, height: 42, borderRadius: 21, overflow: 'hidden', flexShrink: 0 },
-  avatarImg: { width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center 20%' },
+  avatar: {
+    width: 42, height: 42, borderRadius: 21, background: '#38b31f', flexShrink: 0,
+    display: 'flex', alignItems: 'center', justifyContent: 'center',
+  },
+  avatarLetter: { color: '#fff', fontSize: 18, fontWeight: '700', lineHeight: 1 },
   cardInfo: { flex: 1, minWidth: 0 },
-  wName: { fontWeight: '600', fontSize: 13, color: '#000', margin: 0 },
-  wType: { fontSize: 11, color: '#3c3c3c', margin: 0 },
+  wName: { fontWeight: '600', fontSize: 13, color: '#000', margin: 0, textAlign: 'left' },
+  wType: { fontSize: 11, color: '#3c3c3c', margin: 0, textAlign: 'left' },
   badge: {
     fontSize: 10, fontWeight: '700', color: '#fff',
     borderRadius: 10, padding: '3px 8px', flexShrink: 0,
   },
   divider: { height: 0, borderBottom: '0.5px solid rgba(60,60,60,0.15)' },
-  desc: { fontSize: 12, color: '#3c3c3c', margin: 0 },
+  desc: { fontSize: 12, color: '#3c3c3c', margin: 0, textAlign: 'left' },
   actions: { display: 'flex', gap: 8, justifyContent: 'flex-end' },
   btnGreen: {
     background: '#38b31f', color: '#fff', borderRadius: 6,

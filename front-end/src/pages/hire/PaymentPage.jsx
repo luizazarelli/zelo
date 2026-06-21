@@ -43,143 +43,6 @@ function PixQRCode() {
   )
 }
 
-function getBrand(num) {
-  const n = (num || '').replace(/\s/g, '')
-  if (/^4/.test(n)) return 'visa'
-  if (/^(5[1-5]|2[2-7])/.test(n)) return 'mastercard'
-  if (/^3[47]/.test(n)) return 'amex'
-  if (/^(636368|438935|504175|451416|636297|5067|4576|4011)/.test(n)) return 'elo'
-  if (/^(606282|3841)/.test(n)) return 'hipercard'
-  return 'unknown'
-}
-
-const BRAND_GRADIENT = {
-  visa:       'linear-gradient(135deg, #1a237e 0%, #1565c0 100%)',
-  mastercard: 'linear-gradient(135deg, #263238 0%, #455a64 100%)',
-  amex:       'linear-gradient(135deg, #00695c 0%, #00897b 100%)',
-  elo:        'linear-gradient(135deg, #e65100 0%, #ff8f00 100%)',
-  hipercard:  'linear-gradient(135deg, #b71c1c 0%, #e53935 100%)',
-  unknown:    'linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)',
-}
-
-function BrandLogo({ brand }) {
-  if (brand === 'visa') return (
-    <svg width="52" height="17" viewBox="0 0 52 17">
-      <text x="0" y="15" fill="white" fontSize="19" fontWeight="800" fontFamily="serif" fontStyle="italic">VISA</text>
-    </svg>
-  )
-  if (brand === 'mastercard') return (
-    <div style={{ display: 'flex', alignItems: 'center' }}>
-      <div style={{ width: 24, height: 24, borderRadius: '50%', background: '#eb001b' }} />
-      <div style={{ width: 24, height: 24, borderRadius: '50%', background: '#f79e1b', marginLeft: -10, opacity: 0.92 }} />
-    </div>
-  )
-  if (brand === 'amex') return (
-    <svg width="50" height="17" viewBox="0 0 50 17">
-      <text x="0" y="14" fill="white" fontSize="13" fontWeight="800" fontFamily="sans-serif" letterSpacing="1">AMERICAN EXPRESS</text>
-    </svg>
-  )
-  if (brand === 'elo') return (
-    <svg width="36" height="18" viewBox="0 0 36 18">
-      <text x="0" y="15" fill="white" fontSize="18" fontWeight="900" fontFamily="sans-serif" fontStyle="italic">elo</text>
-    </svg>
-  )
-  if (brand === 'hipercard') return (
-    <svg width="56" height="16" viewBox="0 0 56 16">
-      <text x="0" y="13" fill="white" fontSize="12" fontWeight="700" fontFamily="sans-serif">Hipercard</text>
-    </svg>
-  )
-  return null
-}
-
-function CardVisual({ num, name, expiry, cvv, flipped }) {
-  const brand = getBrand(num)
-  const raw = (num || '').replace(/\s/g, '')
-  const disp = (raw.padEnd(16, '•').match(/.{1,4}/g) || []).join(' ')
-  const bg = BRAND_GRADIENT[brand]
-
-  return (
-    <div style={{ perspective: 700, marginBottom: 20 }}>
-      <div style={{
-        position: 'relative', height: 170, borderRadius: 14,
-        transformStyle: 'preserve-3d',
-        transition: 'transform 0.55s ease',
-        transform: flipped ? 'rotateY(180deg)' : 'rotateY(0deg)',
-      }}>
-        {/* Frente */}
-        <div style={{ ...cv.face, background: bg }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 18 }}>
-            <svg width="34" height="26" viewBox="0 0 34 26" style={{ display: 'block' }}>
-              <rect width="34" height="26" rx="4" fill="#d4a843"/>
-              <rect x="7" y="5" width="20" height="16" rx="2" fill="none" stroke="#b8922f" strokeWidth="1.5"/>
-              <line x1="17" y1="5" x2="17" y2="21" stroke="#b8922f" strokeWidth="1.5"/>
-              <line x1="7" y1="13" x2="27" y2="13" stroke="#b8922f" strokeWidth="1.5"/>
-            </svg>
-            <BrandLogo brand={brand} />
-          </div>
-          <p style={cv.num}>{disp}</p>
-          <div style={cv.foot}>
-            <div>
-              <p style={cv.lbl}>TITULAR</p>
-              <p style={cv.val}>{(name || 'NOME TITULAR').toUpperCase()}</p>
-            </div>
-            <div style={{ textAlign: 'right' }}>
-              <p style={cv.lbl}>VALIDADE</p>
-              <p style={cv.val}>{expiry || 'MM/AA'}</p>
-            </div>
-          </div>
-        </div>
-
-        {/* Verso */}
-        <div style={{ ...cv.face, background: bg, transform: 'rotateY(180deg)' }}>
-          <div style={cv.stripe} />
-          <div style={cv.cvvArea}>
-            <div style={cv.cvvStrip}>
-              <p style={cv.cvvVal}>{(cvv || '').padEnd(3, '•')}</p>
-            </div>
-            <p style={cv.cvvLabel}>CVV</p>
-          </div>
-          <div style={{ position: 'absolute', bottom: 14, right: 18 }}>
-            <BrandLogo brand={brand} />
-          </div>
-        </div>
-      </div>
-    </div>
-  )
-}
-
-const cv = {
-  face: {
-    position: 'absolute', inset: 0, borderRadius: 14,
-    padding: '18px 20px', color: '#fff',
-    backfaceVisibility: 'hidden', WebkitBackfaceVisibility: 'hidden',
-    boxShadow: '0 8px 24px rgba(0,0,0,0.28)',
-    display: 'flex', flexDirection: 'column', justifyContent: 'space-between',
-  },
-  num: { fontSize: 15, letterSpacing: 3, fontWeight: '600', margin: 0, fontFamily: 'monospace' },
-  foot: { display: 'flex', justifyContent: 'space-between' },
-  lbl: { fontSize: 8, opacity: 0.65, margin: '0 0 2px', letterSpacing: 1 },
-  val: { fontSize: 12, fontWeight: '700', margin: 0 },
-  stripe: {
-    position: 'absolute', top: 32, left: 0, right: 0,
-    height: 44, background: 'rgba(0,0,0,0.55)',
-  },
-  cvvArea: { position: 'absolute', top: 96, left: 20, right: 20 },
-  cvvStrip: {
-    background: '#fff', borderRadius: 4, height: 34,
-    display: 'flex', alignItems: 'center', justifyContent: 'flex-end',
-    paddingRight: 12, marginBottom: 4,
-  },
-  cvvVal: { color: '#222', fontSize: 16, fontFamily: 'monospace', letterSpacing: 3, fontWeight: '700', margin: 0 },
-  cvvLabel: { fontSize: 10, color: 'rgba(255,255,255,0.75)', textAlign: 'right', margin: 0 },
-}
-
-const METHODS = [
-  { id: 'pix', label: 'Pix' },
-  { id: 'credit', label: 'Cartão de crédito' },
-  { id: 'debit', label: 'Cartão de débito' },
-]
-
 export default function PaymentPage() {
   const { state } = useLocation()
   const { hire, worker, agreedAmount } = state || {}
@@ -188,7 +51,6 @@ export default function PaymentPage() {
     : '0,00'
   const navigate = useNavigate()
 
-  const [selected, setSelected] = useState('pix')
   const [loading, setLoading] = useState(false)
   const [success, setSuccess] = useState(false)
   const [copied, setCopied] = useState(false)
@@ -197,20 +59,11 @@ export default function PaymentPage() {
   const [editAddr, setEditAddr] = useState(false)
   const [addrInput, setAddrInput] = useState('')
 
-  const [cardNum, setCardNum] = useState('')
-  const [cardName, setCardName] = useState('')
-  const [cardExpiry, setCardExpiry] = useState('')
-  const [cardCvv, setCardCvv] = useState('')
-  const [cardFlipped, setCardFlipped] = useState(false)
-
   const copyPix = () => {
     navigator.clipboard?.writeText(PIX_KEY).catch(() => {})
     setCopied(true)
     setTimeout(() => setCopied(false), 2500)
   }
-
-  const fmtNum = v => v.replace(/\D/g, '').slice(0, 16).match(/.{1,4}/g)?.join(' ') || ''
-  const fmtExp = v => { const d = v.replace(/\D/g, '').slice(0, 4); return d.length > 2 ? d.slice(0, 2) + '/' + d.slice(2) : d }
 
   const handlePay = async () => {
     setLoading(true)
@@ -296,83 +149,21 @@ export default function PaymentPage() {
 
       <div style={s.paySection}>
         <p style={s.payTitle}>Forma de pagamento</p>
-        <div style={s.methodTabs}>
-          {METHODS.map(m => (
-            <button
-              key={m.id}
-              style={{ ...s.tab, ...(selected === m.id ? s.tabActive : {}) }}
-              onClick={() => setSelected(m.id)}
-            >
-              {m.label}
+        <div style={s.pixSection}>
+          <div style={s.qrBorder}>
+            <PixQRCode />
+          </div>
+          <p style={s.pixInstr}>Abra seu app bancário e escaneie o QR code, ou copie a chave Pix abaixo.</p>
+          <div style={s.pixKeyBox}>
+            <span style={s.pixKeyText}>{PIX_KEY}</span>
+            <button style={{ ...s.copyBtn, ...(copied ? s.copiedBtn : {}) }} onClick={copyPix}>
+              {copied ? '✓ Copiado!' : 'Copiar'}
             </button>
-          ))}
+          </div>
+          <div style={s.bankHint}>
+            <p style={s.bankHintText}>Compatível com: Nubank, Itaú, Bradesco, PicPay, Inter e todos os bancos com Pix.</p>
+          </div>
         </div>
-
-        {selected === 'pix' && (
-          <div style={s.pixSection}>
-            <div style={s.qrBorder}>
-              <PixQRCode />
-            </div>
-            <p style={s.pixInstr}>Abra seu app bancário e escaneie o QR code, ou copie a chave Pix abaixo.</p>
-            <div style={s.pixKeyBox}>
-              <span style={s.pixKeyText}>{PIX_KEY}</span>
-              <button style={{ ...s.copyBtn, ...(copied ? s.copiedBtn : {}) }} onClick={copyPix}>
-                {copied ? '✓ Copiado!' : 'Copiar'}
-              </button>
-            </div>
-            <div style={s.bankHint}>
-              <p style={s.bankHintText}>Compatível com: Nubank, Itaú, Bradesco, PicPay, Inter e todos os bancos com Pix.</p>
-            </div>
-          </div>
-        )}
-
-        {(selected === 'credit' || selected === 'debit') && (
-          <div style={s.cardForm}>
-            <CardVisual num={cardNum} name={cardName} expiry={cardExpiry} cvv={cardCvv} flipped={cardFlipped} />
-            <input
-              style={s.field}
-              placeholder="Número do cartão"
-              value={cardNum}
-              onChange={e => setCardNum(fmtNum(e.target.value))}
-              maxLength={19}
-              inputMode="numeric"
-              onFocus={() => setCardFlipped(false)}
-            />
-            <input
-              style={s.field}
-              placeholder="Nome do titular"
-              value={cardName}
-              onChange={e => setCardName(e.target.value)}
-              onFocus={() => setCardFlipped(false)}
-            />
-            <div style={{ display: 'flex', gap: 10 }}>
-              <input
-                style={{ ...s.field, flex: 1, marginBottom: 0 }}
-                placeholder="Validade MM/AA"
-                value={cardExpiry}
-                onChange={e => setCardExpiry(fmtExp(e.target.value))}
-                maxLength={5}
-                inputMode="numeric"
-                onFocus={() => setCardFlipped(false)}
-              />
-              <input
-                style={{ ...s.field, width: 88, marginBottom: 0 }}
-                placeholder="CVV"
-                value={cardCvv}
-                onChange={e => setCardCvv(e.target.value.replace(/\D/g, '').slice(0, 3))}
-                maxLength={3}
-                inputMode="numeric"
-                onFocus={() => setCardFlipped(true)}
-                onBlur={() => setCardFlipped(false)}
-              />
-            </div>
-            {cardNum && (
-              <p style={s.brandHint}>
-                Bandeira detectada: <strong>{getBrand(cardNum) === 'unknown' ? 'não identificada' : getBrand(cardNum).charAt(0).toUpperCase() + getBrand(cardNum).slice(1)}</strong>
-              </p>
-            )}
-          </div>
-        )}
       </div>
 
       <button style={{ ...s.payBtn, ...(loading ? s.payBtnDisabled : {}) }} onClick={handlePay} disabled={loading}>
@@ -433,12 +224,6 @@ const s = {
 
   paySection: { padding: '16px 22px 0' },
   payTitle: { fontSize: 15, fontWeight: '600', color: '#000', margin: '0 0 12px' },
-  methodTabs: { display: 'flex', gap: 8, marginBottom: 18, flexWrap: 'wrap' },
-  tab: {
-    border: '1px solid rgba(60,60,60,0.35)', borderRadius: 20,
-    padding: '7px 14px', fontSize: 12, background: '#fbfbfb', cursor: 'pointer', color: '#3c3c3c',
-  },
-  tabActive: { background: '#38b31f', borderColor: '#38b31f', color: '#fff', fontWeight: '600' },
 
   pixSection: { display: 'flex', flexDirection: 'column', alignItems: 'center' },
   qrBorder: {
@@ -462,14 +247,6 @@ const s = {
   },
   bankHintText: { fontSize: 11, color: '#3c3c3c', margin: 0, textAlign: 'center', lineHeight: 1.5 },
 
-  cardForm: {},
-  field: {
-    display: 'block', width: '100%', boxSizing: 'border-box',
-    border: '0.5px solid rgba(60,60,60,0.45)', borderRadius: 8,
-    padding: '11px 12px', fontSize: 13,
-    background: '#fff', color: '#252525', outline: 'none', marginBottom: 10,
-  },
-  brandHint: { fontSize: 11, color: '#3c3c3c', margin: '8px 0 0', textAlign: 'right' },
 
   payBtn: {
     display: 'block', width: 'calc(100% - 44px)', margin: '22px 22px 0',

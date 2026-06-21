@@ -28,7 +28,7 @@ export class ListHiresUsecase implements BaseUsecase<ListHiresInputDto, ListHire
             ...hires.map((h) => h.props.workerId),
         ])]
         const users = await this.userRepository.searchByIds(userIds)
-        const userMap = new Map(users.map((u) => [u.props.id, u.props.name]))
+        const userMap = new Map(users.map((u) => [u.props.id, { name: u.props.name, photo: u.props.profilePicture ?? null }]))
 
         const latestProposals = await Promise.all(
             hires.map(h => this.proposalRepository.findLatestByHireId(h.props.id))
@@ -38,9 +38,11 @@ export class ListHiresUsecase implements BaseUsecase<ListHiresInputDto, ListHire
             hires: hires.map((h, i) => ({
                 id: h.props.id,
                 clientId: h.props.clientId,
-                clientName: userMap.get(h.props.clientId) ?? 'Cliente',
+                clientName: userMap.get(h.props.clientId)?.name ?? 'Cliente',
+                clientPhotoUrl: userMap.get(h.props.clientId)?.photo ?? null,
                 workerId: h.props.workerId,
-                workerName: userMap.get(h.props.workerId) ?? 'Profissional',
+                workerName: userMap.get(h.props.workerId)?.name ?? 'Profissional',
+                workerPhotoUrl: userMap.get(h.props.workerId)?.photo ?? null,
                 serviceTypeId: h.props.serviceTypeId,
                 description: h.props.description,
                 status: h.props.status,

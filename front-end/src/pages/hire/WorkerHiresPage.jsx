@@ -3,6 +3,13 @@ import { useNavigate } from 'react-router-dom'
 import { hireApi } from '../../api/api'
 import { useAuth } from '../../context/AuthContext'
 
+const extractStr = (raw, fallback) => {
+  if (typeof raw === 'string') return raw || fallback
+  if (raw?._props?.name) return raw._props.name
+  if (typeof raw?.name === 'string') return raw.name || fallback
+  return fallback
+}
+
 const STATUS_LABEL = { negotiating: 'Em negociação', accepted: 'Aceito', completed: 'Concluído', cancelled: 'Cancelado' }
 const STATUS_COLOR = { negotiating: '#ff9800', accepted: '#2196f3', completed: '#38b31f', cancelled: '#9e9e9e' }
 const STATUS_ORDER = { negotiating: 0, accepted: 1, completed: 2, cancelled: 3 }
@@ -19,7 +26,8 @@ const fmt = (d) => {
 }
 
 function InitialAvatar({ name }) {
-  const initial = (name || 'C')[0].toUpperCase()
+  const safeName = extractStr(name, 'C')
+  const initial = safeName[0].toUpperCase()
   return (
     <div style={av.wrap}>
       <span style={av.letter}>{initial}</span>
@@ -83,7 +91,7 @@ export default function WorkerHiresPage() {
             <InitialAvatar name={hire.clientName} />
             <div style={s.info}>
               <div style={s.row}>
-                <p style={s.clientName}>{hire.clientName || 'Cliente'}</p>
+                <p style={s.clientName}>{extractStr(hire.clientName, 'Cliente')}</p>
                 <p style={s.date}>{fmt(hire.createdAt)}</p>
               </div>
               <div style={s.row}>

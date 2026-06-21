@@ -3,8 +3,10 @@ export interface ListHiresOutputDto {
         id: string
         clientId: string
         clientName: string
+        clientPhotoUrl: string | null
         workerId: string
         workerName: string
+        workerPhotoUrl: string | null
         serviceTypeId: string
         description: string
         status: string

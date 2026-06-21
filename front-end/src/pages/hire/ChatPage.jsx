@@ -21,9 +21,6 @@ const av = {
   }
 }
 
-const chatKey = (hireId) => `zelo_chat_${hireId}`
-const saveLocal = (hireId, msgs) => { try { localStorage.setItem(chatKey(hireId), JSON.stringify(msgs)) } catch {} }
-const readLocal = (hireId) => { try { return JSON.parse(localStorage.getItem(chatKey(hireId)) || '[]') } catch { return [] } }
 
 const fmtBRL = (n) => Number(n).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
 
@@ -47,6 +44,8 @@ function NegotiationBanner({ hire, proposals, isWorkerView, user, onAccept, onCo
     setShowInput(false)
     setCounterVal('')
   }
+
+  if (hire?.status === 'completed') return null
 
   if (hire?.status === 'cancelled') {
     return (
@@ -189,9 +188,7 @@ export default function ChatPage() {
   const [messages, setMessages] = useState([])
   const [proposals, setProposals] = useState([])
   const [text, setText] = useState('')
-  const [pendingImg, setPendingImg] = useState(null)
   const bottomRef = useRef()
-  const fileRef = useRef()
 
   useEffect(() => { if (hire?.id) loadAll() }, [hire?.id])
 
@@ -209,16 +206,11 @@ export default function ChatPage() {
   }
 
   const loadMessages = async () => {
-    const saved = hire ? readLocal(hire.id) : []
-    const savedImgs = saved.filter(m => m.img)
     try {
       const { data } = await messageApi.list(hire.id, user.id)
-      const api = data.data?.messages || []
-      const apiIds = new Set(api.map(m => m.id))
-      const extraImgs = savedImgs.filter(m => !apiIds.has(m.id))
-      setMessages([...api, ...extraImgs])
+      setMessages(data.data?.messages || [])
     } catch {
-      setMessages(saved)
+      setMessages([])
     }
   }
 
@@ -229,40 +221,14 @@ export default function ChatPage() {
     } catch {}
   }
 
-  const handleAttach = () => fileRef.current?.click()
-
-  const handleFile = (e) => {
-    const file = e.target.files?.[0]
-    if (!file) return
-    const reader = new FileReader()
-    reader.onload = (ev) => setPendingImg(ev.target.result)
-    reader.readAsDataURL(file)
-    e.target.value = ''
-  }
-
   const send = async (e) => {
     e.preventDefault()
     if (!hire) return
 
-    if (pendingImg) {
-      const msg = { id: `tmp-img-${Date.now()}`, senderId: user.id, img: pendingImg, createdAt: new Date().toISOString() }
-      setMessages(prev => {
-        const next = [...prev, msg]
-        saveLocal(hire.id, next)
-        return next
-      })
-      setPendingImg(null)
-    }
-
     if (text.trim()) {
       const content = text.trim()
       setText('')
-      const msg = { id: `tmp-${Date.now()}`, senderId: user.id, content, createdAt: new Date().toISOString() }
-      setMessages(prev => {
-        const next = [...prev, msg]
-        saveLocal(hire.id, next)
-        return next
-      })
+      setMessages(prev => [...prev, { id: `tmp-${Date.now()}`, senderId: user.id, content, createdAt: new Date().toISOString() }])
       try {
         await messageApi.send(hire.id, { senderId: user.id, content })
         await loadMessages()
@@ -352,6 +318,13 @@ export default function ChatPage() {
           </p>
         </div>
 
+        {isWorkerView && hire?.description && (
+          <div style={s.requestCard}>
+            <p style={s.requestTitle}>Solicitação do cliente</p>
+            <p style={s.requestBody}>{hire.description}</p>
+          </div>
+        )}
+
         {messages.map(m => {
           const isMe = m.senderId === user.id
           return (
@@ -362,7 +335,7 @@ export default function ChatPage() {
                 </div>
               ) : (
                 <div style={{ ...s.bubble, ...(isMe ? s.bubbleMe : s.bubbleThem) }}>
-                  <p style={{ color: isMe ? '#fff' : '#1a1a1a', fontSize: 12, margin: 0 }}>{m.content}</p>
+                  <p style={{ color: isMe ? '#fff' : '#1a1a1a', fontSize: 12, margin: 0, textAlign: 'left' }}>{m.content}</p>
                 </div>
               )}
             </div>
@@ -371,22 +344,12 @@ export default function ChatPage() {
         <div ref={bottomRef} />
       </div>
 
-      {pendingImg && (
-        <div style={s.pendingWrap}>
-          <img src={pendingImg} style={s.pendingImg} alt="" />
-          <span style={s.pendingLabel}>Pronto para enviar</span>
-          <button style={s.removePending} onClick={() => setPendingImg(null)}>✕</button>
+      {hire?.status === 'cancelled' ? (
+        <div style={s.closedBar}>
+          <p style={s.closedText}>Esta contratação foi cancelada</p>
         </div>
-      )}
-
-      <input ref={fileRef} type="file" accept="image/*,video/*,application/pdf" style={{ display: 'none' }} onChange={handleFile} />
-
+      ) : (
       <form style={s.inputRow} onSubmit={send}>
-        <button type="button" style={s.attachBtn} onClick={handleAttach} title="Anexar arquivo">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="#3c3c3c" style={{ transform: 'rotate(-45deg)' }}>
-            <path d="M16.5 6v11.5c0 2.21-1.79 4-4 4s-4-1.79-4-4V5c0-1.38 1.12-2.5 2.5-2.5s2.5 1.12 2.5 2.5v10.5c0 .55-.45 1-1 1s-1-.45-1-1V6H10v9.5c0 1.38 1.12 2.5 2.5 2.5s2.5-1.12 2.5-2.5V5c0-2.21-1.79-4-4-4S7 2.79 7 5v12.5c0 3.04 2.46 5.5 5.5 5.5s5.5-2.46 5.5-5.5V6h-1.5z"/>
-          </svg>
-        </button>
         <input
           style={s.input}
           value={text}
@@ -399,6 +362,7 @@ export default function ChatPage() {
           </svg>
         </button>
       </form>
+      )}
     </div>
   )
 }
@@ -418,15 +382,15 @@ const s = {
   notice: { border: '1px solid rgba(60,60,60,0.4)', borderRadius: 8, padding: '12px 12px', marginBottom: 16, textAlign: 'center' },
   noticeTitle: { fontSize: 9, color: '#252525', fontWeight: '700', margin: '0 0 6px' },
   noticeBody: { fontSize: 11, color: '#444', lineHeight: 1.5, margin: 0 },
+  requestCard: { border: '1px solid rgba(56,179,31,0.3)', borderRadius: 8, padding: '12px', marginBottom: 16, background: '#f4faf2' },
+  requestTitle: { fontSize: 9, color: '#38b31f', fontWeight: '700', margin: '0 0 6px', textTransform: 'uppercase', letterSpacing: 0.5 },
+  requestBody: { fontSize: 12, color: '#252525', lineHeight: 1.5, margin: 0 },
   bubble: { maxWidth: '75%', padding: '10px 14px', borderRadius: 16 },
   bubbleMe: { background: '#38b31f' },
   bubbleThem: { background: '#f0f0f0' },
-  pendingWrap: { display: 'flex', alignItems: 'center', gap: 10, padding: '8px 18px', background: '#f0fff0', borderTop: '1px solid rgba(56,179,31,0.3)', flexShrink: 0 },
-  pendingImg: { width: 48, height: 48, objectFit: 'cover', borderRadius: 8, border: '1px solid rgba(56,179,31,0.4)' },
-  pendingLabel: { flex: 1, fontSize: 11, color: '#38b31f', fontWeight: '600' },
-  removePending: { background: 'rgba(0,0,0,0.4)', border: 'none', borderRadius: '50%', color: '#fff', fontSize: 10, width: 20, height: 20, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0, flexShrink: 0 },
   inputRow: { display: 'flex', alignItems: 'center', padding: '10px 16px 16px', gap: 8, background: '#fbfbfb', borderTop: '1px solid rgba(60,60,60,0.1)', flexShrink: 0 },
-  attachBtn: { background: 'none', border: 'none', padding: 4, cursor: 'pointer', display: 'flex', alignItems: 'center', flexShrink: 0 },
   input: { flex: 1, border: '1px solid rgba(60,60,60,0.4)', borderRadius: 22, padding: '9px 16px', fontSize: 13, background: '#fff', color: '#252525', outline: 'none' },
   sendBtn: { background: '#38b31f', border: 'none', borderRadius: 24, padding: '9px 13px', cursor: 'pointer', display: 'flex', alignItems: 'center', flexShrink: 0 },
+  closedBar: { padding: '14px 20px', borderTop: '1px solid rgba(60,60,60,0.1)', background: '#f8f8f8', flexShrink: 0, textAlign: 'center' },
+  closedText: { fontSize: 12, color: '#aaa', margin: 0 },
 }
